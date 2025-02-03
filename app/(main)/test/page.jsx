@@ -1,8 +1,25 @@
-import React from 'react'
+"use client";
+
+import { PaginationComp } from '@/components/PaginationComp';
+import React, { useState } from 'react'
 
 const TestPage = () => {
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(2);
+  const [totalCount, setTotalCount] = useState(20);
+
   return (
-    <div>Test Page</div>
+    <div>
+      <h2 className='text-xl font-bold'>Test Page</h2>
+      <div className='mt-4'>
+        <PaginationComp
+          page={page}
+          pageCount={pageCount}
+          setPage={setPage}
+          totalCount={totalCount}
+        />
+      </div>
+    </div>
   )
 }
 

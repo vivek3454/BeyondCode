@@ -64,8 +64,8 @@ const items = [
         icon: <Search />,
     },
     {
-        title: "Resources",
-        url: "/resources",
+        title: "Test",
+        url: "/test",
         icon: <LucideLink />,
     },
 ];
@@ -78,8 +78,8 @@ export function AppSidebar() {
     return (
         <Sidebar variant="sidebar" collapsible="icon">
             <SidebarHeader className="h-16 border-b-2 justify-center">
-                <Link href="/" className='text-2xl text-black font-semibold flex gap-[2px] items-center'>
-                    <div className='flex text-black gap-0 items-center'>
+                <Link href="/" className='text-2xl text-black dark:text-white font-semibold flex gap-[2px] items-center'>
+                    <div className='flex text-black dark:text-white gap-0 items-center'>
                         <ChevronLeft className='-mr-2' />
                         <ChevronRight />
                     </div>
