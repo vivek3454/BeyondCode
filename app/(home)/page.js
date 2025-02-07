@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "motion/react"
-import { GitlabIcon as GitHub, Linkedin, Mail } from "lucide-react"
+import { GitlabIcon as GitHub, Linkedin, Mail, Twitter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-const technologies = ["React", "Next.js", "JavaScript", "CSS", "HTML", "Node.js", "Git", "TypeScript"]
+const technologies = ["React", "Next.js", "JavaScript", "CSS", "HTML", "Node.js", "Git", "TypeScript", "Tailwind Css", "Mongodb", "Express.js", "Shadcn UI"]
 
 export default function Home() {
   const [currentTechIndex, setCurrentTechIndex] = useState(0)
@@ -23,12 +23,12 @@ export default function Home() {
       <main className="max-w-4xl mx-auto">
         <nav className="flex justify-end mb-8">
           <Link href="/test">
-            <Button variant="ghost" className="text-white hover:text-black">
+            <Button variant="ghost" className="hover:bg-white hover:text-black">
               Test
             </Button>
           </Link>
           <Link href="/sign-in">
-            <Button variant="ghost" className="text-white hover:text-black">
+            <Button variant="ghost" className="hover:bg-white hover:text-black">
               Login
             </Button>
           </Link>
@@ -65,7 +65,7 @@ export default function Home() {
                 <Linkedin className="mr-2 h-4 w-4" /> LinkedIn
               </Button>
               <Button variant="outline" className="text-white bg-black border-white hover:bg-white hover:text-gray-900">
-                <Mail className="mr-2 h-4 w-4" /> Contact
+                <Twitter className="mr-2 h-4 w-4" /> Twitter
               </Button>
             </motion.div>
           </div>

@@ -2,22 +2,24 @@
 import { useEffect, useState } from 'react';
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
 import { SidebarTrigger } from './ui/sidebar';
-import Search from './Search';
+import Search from './Search'
 
 
 const Header = () => {
-    const [isDarkModeOn, setIsDarkModeOn] = useState(JSON.parse(localStorage.getItem("isDarkModeOn")));
+    const [isDarkModeOn, setIsDarkModeOn] = useState(false);
 
     useEffect(() => {
-        if (isDarkModeOn) {
-            localStorage.setItem('isDarkModeOn', true)
+        const storedTheme = JSON.parse(localStorage.getItem("isDarkModeOn"));
+        if (storedTheme) {
+            setIsDarkModeOn(true);
             document.documentElement.classList.add('dark');
         }
-        else {
-            localStorage.setItem('isDarkModeOn', false)
-            document.documentElement.classList.remove('dark');
-        }
-    }, [isDarkModeOn])
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('isDarkModeOn', isDarkModeOn);
+        document.documentElement.classList.toggle('dark', isDarkModeOn);
+    }, [isDarkModeOn]);
 
 
     return (

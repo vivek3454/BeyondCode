@@ -19,11 +19,6 @@ import { usePathname } from "next/navigation";
 
 const items = [
     {
-        title: "Home",
-        url: "/",
-        icon: <Home />,
-    },
-    {
         title: "Learning Log",
         url: "/learning-log",
         icon: <Book />,
@@ -37,31 +32,6 @@ const items = [
         title: "Tips & Tricks",
         url: "/tips-tricks",
         icon: <Lightbulb />,
-    },
-    {
-        title: "Projects",
-        url: "/projects",
-        icon: <Laptop />,
-    },
-    {
-        title: "Blog",
-        url: "/blog",
-        icon: <Pen />,
-    },
-    {
-        title: "About Me",
-        url: "/about-me",
-        icon: <User />,
-    },
-    {
-        title: "Contact",
-        url: "/contact",
-        icon: <Mail />,
-    },
-    {
-        title: "Search",
-        url: "/search",
-        icon: <Search />,
     },
     {
         title: "Test",
@@ -92,7 +62,7 @@ export function AppSidebar() {
                         <SidebarMenu>
                             {items.map((item, i) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild isActive={pathname === item.url}>
+                                    <SidebarMenuButton className={`${pathname === item.url && "dark:bg-white dark:text-black"}`} asChild isActive={pathname === item.url}>
                                         <Link href={item.url}>
                                             {item.icon}
                                             <span>{item.title}</span>
