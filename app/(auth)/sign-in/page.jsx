@@ -47,8 +47,8 @@ export default function SignIn() {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-md">
+        <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-black">
+            <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-900 rounded-xl shadow-md">
                 <h1 className="text-2xl font-bold text-center">Sign In</h1>
                 {error && (
                     <Alert variant="destructive">
@@ -64,7 +64,7 @@ export default function SignIn() {
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="you@example.com" {...field} />
+                                        <Input className="dark:bg-gray-800" placeholder="you@example.com" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -77,13 +77,13 @@ export default function SignIn() {
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input type="password" {...field} />
+                                        <Input className="dark:bg-gray-800" type="password" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="w-full">
+                        <Button type="submit" className="w-full dark:bg-gray-200 hover:dark:bg-gray-300">
                             Sign In
                         </Button>
                     </form>
