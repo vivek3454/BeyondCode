@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "motion/react"
-import { GitlabIcon as GitHub, Linkedin, Mail, Twitter } from "lucide-react"
+import { ChevronLeft, ChevronRight, GitlabIcon as GitHub, Linkedin, Mail, Twitter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md"
@@ -35,22 +35,31 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 to-gray-200 text-black dark:from-gray-900 dark:to-gray-950 dark:text-white p-8">
-      <main className="max-w-4xl mx-auto">
-        <nav className="flex justify-end gap-3 mb-8">
-          <Link href="/test">
-            <Button variant="ghost" className="dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white">
-              Test
-            </Button>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-200 text-black dark:from-gray-900 dark:to-gray-950 dark:text-white p-8">
+      <main className="container mx-auto">
+        <nav className="flex justify-between gap-3 mb-8">
+          <Link href="/" className='text-2xl text-black dark:text-white font-semibold flex gap-[2px] items-center'>
+            <div className='flex text-black dark:text-white gap-0 items-center'>
+              <ChevronLeft className='-mr-2' />
+              <ChevronRight />
+            </div>
+            BeyondCode
           </Link>
-          <Link href="/sign-in">
-            <Button variant="ghost" className="dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white">
-              Login
-            </Button>
-          </Link>
-          <button className='dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white rounded-full w-10 h-10 flex text-xl justify-center items-center' onClick={() => setIsDarkModeOn((prev) => !prev)}>
-            {isDarkModeOn ? <MdOutlineLightMode /> : <MdOutlineDarkMode />}
-          </button>
+          <div className="flex gap-3 items-center">
+            <Link href="/test">
+              <Button variant="ghost" className="dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white">
+                Test
+              </Button>
+            </Link>
+            <Link href="/sign-in">
+              <Button variant="ghost" className="dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white">
+                Login
+              </Button>
+            </Link>
+            <button className='dark:hover:bg-white dark:hover:text-black hover:bg-black hover:text-white rounded-full w-10 h-10 flex text-xl justify-center items-center' onClick={() => setIsDarkModeOn((prev) => !prev)}>
+              {isDarkModeOn ? <MdOutlineLightMode /> : <MdOutlineDarkMode />}
+            </button>
+          </div>
         </nav>
 
         <div className="flex flex-col md:flex-row items-center justify-between mb-16">
