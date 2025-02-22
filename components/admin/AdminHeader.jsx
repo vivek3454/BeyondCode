@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
-import { SidebarTrigger } from './ui/sidebar';
+import { SidebarTrigger } from '../ui/sidebar';
 
 
 const AdminHeader = () => {

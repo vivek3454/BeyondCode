@@ -1,5 +1,5 @@
-import { AdminSidebar } from "@/components/admin-sidebar";
-import AdminHeader from "@/components/AdminHeader";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import AdminHeader from "@/components/admin/AdminHeader";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 const MainLayout = ({ children }) => {

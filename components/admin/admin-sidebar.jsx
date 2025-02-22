@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import AddMenuItemModal from "./AddMenuItemModal";
 
 const items = [
     {
@@ -45,6 +46,7 @@ export function AdminSidebar() {
     const pathname = usePathname();
     const { state } = useSidebar();
     const [isOpen, setIsOpen] = useState(false);
+    const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
     console.log("state: ", state);
 
     return (
@@ -63,7 +65,7 @@ export function AdminSidebar() {
                     <SidebarGroupContent className="mt-0">
                         <SidebarMenu>
                             <SidebarMenuItem>
-                                <SidebarMenuButton variant="outline">
+                                <SidebarMenuButton onClick={() => setIsAddMenuItemModalOpen(true)} variant="outline">
                                     <BadgePlus className="w-6 h-6" />
                                     Add Menu Item
                                 </SidebarMenuButton>
@@ -78,7 +80,7 @@ export function AdminSidebar() {
                                             </Link>
                                             <div className="flex items-center gap-0">
                                                 <Plus className="cursor-pointer" />
-                                                <ChevronRight onClick={()=> setIsOpen(!isOpen)} className={`cursor-pointer trasnsition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />
+                                                <ChevronRight onClick={() => setIsOpen(!isOpen)} className={`cursor-pointer trasnsition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />
                                             </div>
                                         </div>
                                     </SidebarMenuButton>
@@ -88,6 +90,13 @@ export function AdminSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+
+            {isAddMenuItemModalOpen &&
+                <AddMenuItemModal
+                    isAddMenuItemModalOpen={isAddMenuItemModalOpen}
+                    setIsAddMenuItemModalOpen={setIsAddMenuItemModalOpen}
+                />
+            }
         </Sidebar>
     )
 }
