@@ -1,6 +1,7 @@
 import { model, models, Schema } from "mongoose";
+import bcrypt from "bcryptjs";
 
-const userSchema = new Schema({
+const adminSchema = new Schema({
     email: {
         type: String,
         required: true,
@@ -14,12 +15,12 @@ const userSchema = new Schema({
     timestamps: true,
 });
 
-userSchema.pre("save", async function (next) {
+adminSchema.pre("save", async function (next) {
     if (this.isModified("password")) {
         this.password = await bcrypt.hash(this.password, 10);
     }
     next();
 });
 
-const User = models?.User || model("User", userSchema);
-export default User;
+const Admin = models?.Admin || model("Admin", adminSchema);
+export default Admin;

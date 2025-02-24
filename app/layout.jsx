@@ -1,8 +1,7 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import Header from "@/components/Header";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import SessionProviderWrapper from "@/components/admin/SessionProviderWrapper";
 
 const inter = Inter({
   variable: "--font-inter",  // You can define your custom variable here
@@ -22,7 +21,14 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} antialiased`}
       >
-        {children}
+        <SessionProviderWrapper>
+          {children}
+        </SessionProviderWrapper>
+
+        <Toaster
+          position="top-center"
+          richColors
+        />
       </body>
     </html>
   );

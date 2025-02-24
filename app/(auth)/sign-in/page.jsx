@@ -1,15 +1,17 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { PasswordInput } from "@/components/ui/password-input"
+import { toast } from "sonner"
 
 const signInSchema = z.object({
     email: z.string().email({
@@ -21,8 +23,8 @@ const signInSchema = z.object({
 })
 
 export default function SignIn() {
-    const [error, setError] = useState("")
     const router = useRouter()
+    const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm({
         resolver: zodResolver(signInSchema),
@@ -32,29 +34,29 @@ export default function SignIn() {
         },
     })
 
-    async function onSubmit(values) {
-        setError("")
+    async function onSubmit(data) {
+        console.log("data", data);
+        setIsLoading(true);
+        const result = await signIn("credentials", {
+            email: data.email,
+            password: data.password,
+            redirect: false,
+        });
 
-        // Here you would typically make an API call to your authentication endpoint
-        // For this example, we'll just simulate a successful sign-in
-        console.log("Signing in with:", values.email, values.password)
-
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        // Redirect to dashboard after successful sign-in
-        router.push("/dashboard")
+        if (result?.error) {
+            toast.error(result.error);
+            setIsLoading(false);
+        } else {
+            setIsLoading(false);
+            toast.success("Login successful!");
+            router.push("/admin");
+        }
     }
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-black">
             <div className="w-full max-w-md p-8 space-y-6 bg-white dark:bg-gray-900 rounded-xl shadow-md">
                 <h1 className="text-2xl font-bold text-center">Sign In</h1>
-                {error && (
-                    <Alert variant="destructive">
-                        <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                )}
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
@@ -77,14 +79,22 @@ export default function SignIn() {
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input className="dark:bg-gray-800" type="password" {...field} />
+                                        {/* <Input className="dark:bg-gray-800" type="password" {...field} /> */}
+                                        <PasswordInput
+                                            id="password"
+                                            className="dark:bg-gray-800"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            autoComplete="new-password"
+                                            placeholder="********"
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="w-full dark:bg-gray-200 hover:dark:bg-gray-300">
-                            Sign In
+                        <Button disabled={isLoading} type="submit" className="w-full dark:bg-gray-200 hover:dark:bg-gray-300">
+                            {isLoading ? "Loading..." : "Sign In"}
                         </Button>
                     </form>
                 </Form>
