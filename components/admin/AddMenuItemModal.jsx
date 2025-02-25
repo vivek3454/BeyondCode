@@ -14,20 +14,30 @@ import { useForm } from 'react-hook-form';
 import { Button } from "../ui/button";
 import { Input } from '../ui/input';
 import { Switch } from "../ui/switch";
+import { useAddMenuItem } from "@/hooks/useAddMenuItem";
+import { useUpdateMenuItem } from "@/hooks/useUpdateMenuItem";
 
-const AddMenuItemModal = ({ isAddMenuItemModalOpen, setIsAddMenuItemModalOpen }) => {
+const AddMenuItemModal = ({ isAddMenuItemModalOpen, setIsAddMenuItemModalOpen, parentId, menuItem }) => {
     const form = useForm({
         resolver: zodResolver(AddMenuItemSchema),
         defaultValues: {
-            title: "",
-            isLink: false,
-            type: "single",
+            title: menuItem?.title || "",
+            isLink: menuItem?.isLink || false,
+            type: menuItem?.type || "single",
         }
     })
 
+    const { mutate, isLoading } = useAddMenuItem();
+    const { mutate: updateMenuItem, isLoading: isUpdateLoading } = useUpdateMenuItem();
 
     const onSubmit = (data) => {
         console.log("data", data);
+        if (menuItem) {
+            updateMenuItem({ ...data, menuItemId: menuItem?._id }, { onSuccess: () => setIsAddMenuItemModalOpen(false) });
+        }
+        else {
+            mutate({ ...data, parentId: parentId ? parentId : null }, { onSuccess: () => setIsAddMenuItemModalOpen(false) });
+        }
     }
 
     return (
@@ -101,9 +111,8 @@ const AddMenuItemModal = ({ isAddMenuItemModalOpen, setIsAddMenuItemModalOpen })
                             )}
                         />
 
-                        <Button type="submit" className="w-full h-10 text-base">
-                            {/* {isLoading ? <Spinner size={30} /> : faq ? "Update" : "Add"} */}
-                            Add
+                        <Button disabled={isLoading || isUpdateLoading} type="submit" className="w-full h-10 text-base">
+                            {(isLoading || isUpdateLoading) ? "Adding..." : menuItem ? "Update" : "Add"}
                         </Button>
                     </form>
                 </Form>
