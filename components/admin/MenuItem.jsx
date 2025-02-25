@@ -7,6 +7,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { SidebarMenuButton, SidebarMenuItem, SidebarMenuSub } from '../ui/sidebar';
 import AddMenuItemModal from './AddMenuItemModal';
+import DeleteAlertModal from './DeleteAlertModal';
+import { useDeleteMenuItem } from '@/hooks/useDeleteMenuItem';
 
 const MenuItem = ({ menuItem }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -18,9 +20,14 @@ const MenuItem = ({ menuItem }) => {
     const currentPathValue = useMemo(() => pathname.split("/")[3], [pathname]);
     const router = useRouter();
     const title = menuItem?.title.toLowerCase()
-
-
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetMenuItems(menuItem._id, `menuItems-${menuItem._id}`);
+    const { mutate, isLoading } = useDeleteMenuItem();
+
+    const handleDelete = () => {
+        setIsDeleteMenuItemModalOpen(true);
+        mutate({ menuItemId: menuItem?._id }, { onSuccess: () => setIsDeleteMenuItemModalOpen(false) });
+    }
+
     console.log(`AdminSidebar data ${menuItem.title}`, data);
 
     useEffect(() => {
@@ -65,7 +72,7 @@ const MenuItem = ({ menuItem }) => {
                                                 <button onClick={() => setIsUpdateMenuItemModalOpen(true)}>Edit Menu Item</button>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem>
-                                                <span>Delete Menu Item</span>
+                                                <button onClick={() => setIsDeleteMenuItemModalOpen(true)}>Delete Menu Item</button>
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
@@ -106,9 +113,11 @@ const MenuItem = ({ menuItem }) => {
             }
 
             {isDeleteMenuItemModalOpen &&
-                <AddMenuItemModal
-                    isAddMenuItemModalOpen={isDeleteMenuItemModalOpen}
-                    setIsAddMenuItemModalOpen={setIsDeleteMenuItemModalOpen}
+                <DeleteAlertModal
+                    isDeleteModalOpen={isDeleteMenuItemModalOpen}
+                    setIsDeleteModalOpen={setIsDeleteMenuItemModalOpen}
+                    handleDelete={handleDelete}
+                    isLoading={isLoading}
                 />
             }
         </>

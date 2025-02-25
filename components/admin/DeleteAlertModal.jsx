@@ -1,4 +1,3 @@
-import React from 'react'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -7,18 +6,11 @@ import {
     AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { useDeleteMenuItem } from '@/hooks/useDeleteMenuItem';
+    AlertDialogTitle
+} from "@/components/ui/alert-dialog";
 
 
-const DeleteAlertModal = ({ isDeleteModalOpen, setIsDeleteModalOpen }) => {
-    const { mutate, isLoading } = useDeleteMenuItem();
-    const handleDelete = () => {
-        setIsDeleteModalOpen(true);
-        mutate({ ...data, parentId: parentId ? parentId : null }, { onSuccess: () => setIsDeleteModalOpen(false) });
-    }
+const DeleteAlertModal = ({ isDeleteModalOpen, setIsDeleteModalOpen, handleDelete, isLoading }) => {
 
     return (
         <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>

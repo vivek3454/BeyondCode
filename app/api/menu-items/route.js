@@ -1,6 +1,7 @@
 import { connectToDatabase } from "@/lib/db";
 import Admin from "@/models/Admin";
 import MenuItem from "@/models/MenuItem";
+import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -56,7 +57,7 @@ export async function PATCH(request) {
 
         return NextResponse.json(
             { message: "Menu item updated successfully" },
-            { status: 201 }
+            { status: 200 }
         )
     } catch (error) {
         console.log("menu item update error", error);
@@ -71,14 +72,30 @@ export async function DELETE(request) {
     try {
         const { searchParams } = new URL(request.url);
         let menuItemId = searchParams.get("menuItemId");
+        console.log("menuItemId", menuItemId);
+
 
         await connectToDatabase();
 
-        await MenuItem.findByIdAndDelete(menuItemId);
+        if (!mongoose.Types.ObjectId.isValid(menuItemId)) {
+            return NextResponse.json(
+                { message: "Invalid menuItemId" },
+                { status: 400 }
+            )
+        }
+
+        const deletedMenuItem = await MenuItem.findByIdAndDelete(menuItemId);
+
+        if (!deletedMenuItem) {
+            return NextResponse.json(
+                { message: "Menu item not found" },
+                { status: 404 }
+            )
+        }
 
         return NextResponse.json(
             { message: "Menu item deleted successfully" },
-            { status: 201 }
+            { status: 200 }
         )
     } catch (error) {
         console.log("menu item delete error", error);
