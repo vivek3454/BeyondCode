@@ -6,10 +6,12 @@ import { signOut, useSession } from 'next-auth/react';
 import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import LogoutAlertModal from './LogoutAlertModal';
 
 
 const AdminHeader = () => {
     const [isDarkModeOn, setIsDarkModeOn] = useState(false);
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const { data: session } = useSession();
     const router = useRouter();
     console.log("session", session);
@@ -39,13 +41,13 @@ const AdminHeader = () => {
 
 
     return (
-        <div className='border-b-2 dark:bg-black w-full sticky bg-white top-0 px-5 pl-4 h-16 flex justify-between items-center'>
+        <div className='border-b-2 dark:bg-black w-full sticky bg-white top-0 px-5 pl-4 h-16 z-10 flex justify-between items-center'>
             <div className='flex gap-2 items-center'>
                 <SidebarTrigger />
             </div>
             <div className='flex gap-2 items-center'>
                 {session &&
-                    <button className='hover:bg-slate-100 hover:dark:text-black rounded-full w-10 h-10 flex text-xl justify-center items-center' onClick={handleSignOut}>
+                    <button className='hover:bg-slate-100 hover:dark:text-black rounded-full w-10 h-10 flex text-xl justify-center items-center' onClick={() => setIsLogoutModalOpen(true)}>
                         <LogOut className='w-5 h-5' />
                     </button>}
                 <button className='hover:bg-slate-100 hover:dark:text-black rounded-full w-10 h-10 flex text-xl justify-center items-center' onClick={() => setIsDarkModeOn((prev) => !prev)}>
@@ -53,6 +55,13 @@ const AdminHeader = () => {
                 </button>
             </div>
             {/* <Button onClick={()=>router.push("/sign-in")} className="w-28">Login</Button> */}
+            {isLogoutModalOpen &&
+                <LogoutAlertModal
+                    handleLogout={handleSignOut}
+                    isLogoutModalOpen={isLogoutModalOpen}
+                    setIsLogoutModalOpen={setIsLogoutModalOpen}
+                />
+            }
         </div>
     )
 }

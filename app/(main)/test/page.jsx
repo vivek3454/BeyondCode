@@ -1,7 +1,6 @@
 "use client";
 
 import { PaginationComp } from '@/components/PaginationComp';
-import Tiptap from '@/components/TiptapEditor';
 import { useCallback, useState } from 'react';
 
 const TestPage = () => {
@@ -17,8 +16,6 @@ const TestPage = () => {
   return (
     <div>
       <h2 className='text-xl font-bold'>Test Page</h2>
-      
-      <Tiptap />
 
       <div className='mt-4'>
         <PaginationComp

@@ -11,7 +11,7 @@ const MainLayout = ({ children }) => {
                 </aside>
                 <div className="w-full">
                     <AdminHeader />
-                    <main className="p-5">
+                    <main className="p-5 relative">
                         {children}
                     </main>
                 </div>

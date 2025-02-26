@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgePlus, Book, ChevronLeft, ChevronRight, Lightbulb, Link as LucideLink, Wrench } from "lucide-react";
+import { BadgePlus, ChevronLeft, ChevronRight } from "lucide-react";
 
 import {
     Sidebar,
@@ -15,43 +15,25 @@ import {
 } from "@/components/ui/sidebar";
 import { useGetMenuItems } from "@/hooks/useGetMenuItems";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
 import AddMenuItemModal from "./AddMenuItemModal";
 import MenuItem from "./MenuItem";
+import Loader from "../Loader";
 
-const items = [
-    {
-        title: "Learning Log",
-        url: "/learning-log",
-        icon: Book,
-    },
-    {
-        title: "Packages & Tools",
-        url: "/packages-tools",
-        icon: Wrench,
-    },
-    {
-        title: "Tips & Tricks",
-        url: "/tips-tricks",
-        icon: Lightbulb,
-    },
-    {
-        title: "Test",
-        url: "/test",
-        icon: LucideLink,
-    },
-];
 
 export function AdminSidebar() {
     const [sidebarItems, setSidebarItems] = useState([])
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetMenuItems(null);
+    const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
+    const { state } = useSidebar();
+    const observerRef = useRef();
+
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useGetMenuItems(null, "menuItems");
     console.log("AdminSidebar data", data);
 
-    const { state } = useSidebar();
-    const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
-
     useEffect(() => {
-        setSidebarItems(data?.menuItems || []);
+        const allData = data?.pages?.map(page => page?.menuItems)
+        setSidebarItems(allData?.flat());
     }, [data])
 
 
@@ -76,12 +58,14 @@ export function AdminSidebar() {
                                     Add Menu Item
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
+                            {isLoading && <Loader />}
                             {sidebarItems?.map((item) => (
                                 <MenuItem
                                     key={item?._id}
                                     menuItem={item}
                                 />
                             ))}
+                            {hasNextPage && <Button variant="secondary" size="sm" disabled={isFetchingNextPage} onClick={fetchNextPage}>{isFetchingNextPage ? "Loading..." : "Load More"}</Button>}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

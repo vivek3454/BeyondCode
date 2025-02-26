@@ -10,18 +10,18 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
-const DeleteAlertModal = ({ isDeleteModalOpen, setIsDeleteModalOpen, handleDelete, isLoading }) => {
+const LogoutAlertModal = ({ isLogoutModalOpen, setIsLogoutModalOpen, handleLogout }) => {
 
     return (
-        <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <AlertDialog open={isLogoutModalOpen} onOpenChange={setIsLogoutModalOpen}>
             <AlertDialogContent className="max-w-sm">
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogTitle>Are you absolutely sure to logout?</AlertDialogTitle>
                     <AlertDialogDescription></AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>{isLoading ? "Deleting..." : "Delete"}</AlertDialogAction>
+                    <AlertDialogAction onClick={handleLogout}>Logout</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
@@ -29,4 +29,4 @@ const DeleteAlertModal = ({ isDeleteModalOpen, setIsDeleteModalOpen, handleDelet
     )
 }
 
-export default DeleteAlertModal
+export default LogoutAlertModal

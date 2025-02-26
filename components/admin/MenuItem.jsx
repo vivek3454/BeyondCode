@@ -1,6 +1,6 @@
 'use client';
 import { useGetMenuItems } from '@/hooks/useGetMenuItems';
-import { ChevronUp, MoreHorizontal } from 'lucide-react';
+import { ChevronUp, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
@@ -9,6 +9,8 @@ import { SidebarMenuButton, SidebarMenuItem, SidebarMenuSub } from '../ui/sideba
 import AddMenuItemModal from './AddMenuItemModal';
 import DeleteAlertModal from './DeleteAlertModal';
 import { useDeleteMenuItem } from '@/hooks/useDeleteMenuItem';
+import { Button } from '../ui/button';
+import Loader from '../Loader';
 
 const MenuItem = ({ menuItem }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -16,11 +18,12 @@ const MenuItem = ({ menuItem }) => {
     const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
     const [isUpdateMenuItemModalOpen, setIsUpdateMenuItemModalOpen] = useState(false);
     const [isDeleteMenuItemModalOpen, setIsDeleteMenuItemModalOpen] = useState(false);
+    const [isDropDownMenuOpen, setIsDropDownMenuOpen] = useState(false);
     const pathname = usePathname();
     const currentPathValue = useMemo(() => pathname.split("/")[3], [pathname]);
     const router = useRouter();
-    const title = menuItem?.title.toLowerCase()
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGetMenuItems(menuItem._id, `menuItems-${menuItem._id}`);
+    const title = menuItem?.title.toLowerCase();
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: isLoadingMenuItems } = useGetMenuItems(menuItem._id, `menuItems-${menuItem._id}`, 10, isOpen);
     const { mutate, isLoading } = useDeleteMenuItem();
 
     const handleDelete = () => {
@@ -31,8 +34,9 @@ const MenuItem = ({ menuItem }) => {
     console.log(`AdminSidebar data ${menuItem.title}`, data);
 
     useEffect(() => {
-        if (data?.menuItems) {
-            setSidebarItems(data.menuItems);
+        if (data) {
+            const allData = data?.pages?.map(page => page?.menuItems)
+            setSidebarItems(allData?.flat());
         }
     }, [data]);
 
@@ -42,6 +46,21 @@ const MenuItem = ({ menuItem }) => {
             sessionStorage.setItem("menuItem", JSON.stringify({ name: menuItem?.title, id: menuItem?._id }));
             router.push(`/admin/details/${title}`);
         }
+    }
+
+    const handleDeleteModal = () => {
+        setIsDeleteMenuItemModalOpen(true);
+        setIsDropDownMenuOpen(false);
+    }
+
+    const handleEditModal = () => {
+        setIsUpdateMenuItemModalOpen(true);
+        setIsDropDownMenuOpen(false);
+    }
+
+    const handleAddModal = () => {
+        setIsAddMenuItemModalOpen(true);
+        setIsDropDownMenuOpen(false);
     }
 
     return (
@@ -57,22 +76,31 @@ const MenuItem = ({ menuItem }) => {
                                 </button>
                                 <div className="flex items-center gap-1">
                                     {/* <Plus onClick={() => setIsAddMenuItemModalOpen(true)} className="cursor-pointer" /> */}
-                                    <DropdownMenu>
+                                    <DropdownMenu open={isDropDownMenuOpen} onOpenChange={setIsDropDownMenuOpen}>
                                         <DropdownMenuTrigger asChild>
                                             {/* <SidebarMenuAction> */}
-                                            <MoreHorizontal />
+                                            <MoreHorizontal onClick={() => setIsDropDownMenuOpen(!isDropDownMenuOpen)} />
                                             {/* </SidebarMenuAction> */}
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent side="left" align="start">
+                                        <DropdownMenuContent side="right" align="start">
                                             {menuItem?.type === "multiple" &&
                                                 <DropdownMenuItem>
-                                                    <button onClick={() => setIsAddMenuItemModalOpen(true)}>Add Menu Item</button>
+                                                    <button className='flex items-center gap-3' onClick={handleAddModal}>
+                                                        <Plus />
+                                                        Add Menu Item
+                                                    </button>
                                                 </DropdownMenuItem>}
                                             <DropdownMenuItem>
-                                                <button onClick={() => setIsUpdateMenuItemModalOpen(true)}>Edit Menu Item</button>
+                                                <button className='flex items-center gap-3' onClick={handleEditModal}>
+                                                    <Pencil />
+                                                    Edit Menu Item
+                                                </button>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem>
-                                                <button onClick={() => setIsDeleteMenuItemModalOpen(true)}>Delete Menu Item</button>
+                                                <button className='flex items-center gap-3' onClick={handleDeleteModal}>
+                                                    <Trash2 />
+                                                    Delete Menu Item
+                                                </button>
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
@@ -84,17 +112,20 @@ const MenuItem = ({ menuItem }) => {
                         </SidebarMenuButton>
                         <CollapsibleContent className='mt-2'>
                             <SidebarMenuSub className="p-0 mr-0">
+                                {isLoadingMenuItems && <Loader />}
                                 {sidebarItems?.map((item) => (
                                     <MenuItem
                                         key={item?._id}
                                         menuItem={item}
                                     />
                                 ))}
+                                {hasNextPage && <Button className="h-7" variant="secondary" size="sm" disabled={isFetchingNextPage} onClick={fetchNextPage}>{isFetchingNextPage ? "Loading..." : "Load More"}</Button>}
                             </SidebarMenuSub>
                         </CollapsibleContent>
                     </SidebarMenuItem>
                 </Collapsible>
             </SidebarMenuItem>
+
             {isAddMenuItemModalOpen &&
                 <AddMenuItemModal
                     isAddMenuItemModalOpen={isAddMenuItemModalOpen}
