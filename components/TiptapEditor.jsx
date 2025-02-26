@@ -64,7 +64,7 @@ const TiptapEditor = () => {
     })
 
     return (
-        <div className="p-4 border rounded-md shadow-md w-full mx-auto">
+        <div className="p-4 border rounded-md shadow-md w-full">
             {/* Toolbar */}
             <div className="mb-2 flex gap-2 border-b pb-2">
                 <button onClick={() => editor.chain().focus().toggleBold().run()} className={`px-2 py-1 border rounded ${editor?.isActive('bold') ? 'bg-gray-300' : ''}`}>B</button>
@@ -82,7 +82,7 @@ const TiptapEditor = () => {
             </div>
 
             {/* Editor Content */}
-            <EditorContent editor={editor} className="border p-2 rounded min-h-[200px] h-full w-full" />
+            <EditorContent editor={editor} className="px-4 py-2 prose max-w-none h-full w-full" />
         </div>
     )
 }

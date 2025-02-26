@@ -10,7 +10,7 @@ const AddDetails = () => {
 
     return (
         <div className='relative'>
-            <div className='bg-white py-2 sticky mb-5 top-16 flex justify-between items-center gap-3'>
+            <div className='bg-white py-2 sticky mb-5 top-16 z-10 flex justify-between items-center gap-3'>
                 <h1 className='text-xl font-semibold'>Add Details</h1>
                 <Button>Submit Changes</Button>
             </div>
