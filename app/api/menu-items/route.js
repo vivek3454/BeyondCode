@@ -72,8 +72,6 @@ export async function DELETE(request) {
     try {
         const { searchParams } = new URL(request.url);
         let menuItemId = searchParams.get("menuItemId");
-        console.log("menuItemId", menuItemId);
-
 
         await connectToDatabase();
 

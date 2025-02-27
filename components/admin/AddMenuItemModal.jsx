@@ -8,14 +8,14 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PATCH, POST } from "@/constants/apiMethods";
+import { useApiMutation } from "@/hooks/useApiMutation";
 import { AddMenuItemSchema } from '@/schemas/AddMenuItemSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from "../ui/button";
 import { Input } from '../ui/input';
 import { Switch } from "../ui/switch";
-import { useAddMenuItem } from "@/hooks/useAddMenuItem";
-import { useUpdateMenuItem } from "@/hooks/useUpdateMenuItem";
 
 const AddMenuItemModal = ({ isAddMenuItemModalOpen, setIsAddMenuItemModalOpen, parentId, menuItem }) => {
     const form = useForm({
@@ -26,9 +26,17 @@ const AddMenuItemModal = ({ isAddMenuItemModalOpen, setIsAddMenuItemModalOpen, p
             type: menuItem?.type || "single",
         }
     })
+    const { mutate: addMenuItem,isLoading } = useApiMutation({
+        url: "/menu-items",
+        method: POST,
+        invalidateKey: ["menuItems"],
+    });
 
-    const { mutate, isLoading } = useAddMenuItem();
-    const { mutate: updateMenuItem, isLoading: isUpdateLoading } = useUpdateMenuItem();
+    const { mutate: updateMenuItem,isLoading:isUpdateLoading } = useApiMutation({
+        url: "/menu-items",
+        method: PATCH,
+        invalidateKey: ["menuItems"],
+    });
 
     const onSubmit = (data) => {
         console.log("data", data);
@@ -36,7 +44,7 @@ const AddMenuItemModal = ({ isAddMenuItemModalOpen, setIsAddMenuItemModalOpen, p
             updateMenuItem({ ...data, menuItemId: menuItem?._id }, { onSuccess: () => setIsAddMenuItemModalOpen(false) });
         }
         else {
-            mutate({ ...data, parentId: parentId ? parentId : null }, { onSuccess: () => setIsAddMenuItemModalOpen(false) });
+            addMenuItem({ ...data, parentId: parentId ? parentId : null }, { onSuccess: () => setIsAddMenuItemModalOpen(false) });
         }
     }
 

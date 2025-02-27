@@ -1,16 +1,17 @@
 'use client';
+import { DELETE } from '@/constants/apiMethods';
+import { useApiMutation } from '@/hooks/useApiMutation';
 import { useGetMenuItems } from '@/hooks/useGetMenuItems';
 import { ChevronUp, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import Loader from '../Loader';
+import { Button } from '../ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { SidebarMenuButton, SidebarMenuItem, SidebarMenuSub } from '../ui/sidebar';
 import AddMenuItemModal from './AddMenuItemModal';
 import DeleteAlertModal from './DeleteAlertModal';
-import { useDeleteMenuItem } from '@/hooks/useDeleteMenuItem';
-import { Button } from '../ui/button';
-import Loader from '../Loader';
 
 const MenuItem = ({ menuItem }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -24,14 +25,17 @@ const MenuItem = ({ menuItem }) => {
     const router = useRouter();
     const title = menuItem?.title.toLowerCase();
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: isLoadingMenuItems } = useGetMenuItems(menuItem._id, `menuItems-${menuItem._id}`, 10, isOpen);
-    const { mutate, isLoading } = useDeleteMenuItem();
+    const { mutate: deleteMenuItem,isLoading } = useApiMutation({
+        url: "/menu-items",
+        method: DELETE,
+        invalidateKey: ["menuItems"],
+    });
 
     const handleDelete = () => {
         setIsDeleteMenuItemModalOpen(true);
-        mutate({ menuItemId: menuItem?._id }, { onSuccess: () => setIsDeleteMenuItemModalOpen(false) });
+        deleteMenuItem({ menuItemId: menuItem?._id }, { onSuccess: () => setIsDeleteMenuItemModalOpen(false) });
     }
 
-    console.log(`AdminSidebar data ${menuItem.title}`, data);
 
     useEffect(() => {
         if (data) {

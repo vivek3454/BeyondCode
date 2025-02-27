@@ -15,21 +15,19 @@ import {
 } from "@/components/ui/sidebar";
 import { useGetMenuItems } from "@/hooks/useGetMenuItems";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import Loader from "../Loader";
 import { Button } from "../ui/button";
 import AddMenuItemModal from "./AddMenuItemModal";
 import MenuItem from "./MenuItem";
-import Loader from "../Loader";
 
 
 export function AdminSidebar() {
     const [sidebarItems, setSidebarItems] = useState([])
     const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
     const { state } = useSidebar();
-    const observerRef = useRef();
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useGetMenuItems(null, "menuItems");
-    console.log("AdminSidebar data", data);
 
     useEffect(() => {
         const allData = data?.pages?.map(page => page?.menuItems)

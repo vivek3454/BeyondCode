@@ -21,7 +21,7 @@ const DeleteAlertModal = ({ isDeleteModalOpen, setIsDeleteModalOpen, handleDelet
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>{isLoading ? "Deleting..." : "Delete"}</AlertDialogAction>
+                    <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDelete}>{isLoading ? "Deleting..." : "Delete"}</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
