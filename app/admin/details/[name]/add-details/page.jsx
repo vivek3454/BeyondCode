@@ -1,5 +1,5 @@
 "use client";
-import TiptapEditor from '@/components/TiptapEditor';
+import TiptapEditor from '@/components/admin/tiptap-editor/TiptapEditor';
 import { Button } from '@/components/ui/button';
 import { PATCH, POST } from '@/constants/apiMethods';
 import { useApiMutation } from '@/hooks/useApiMutation';

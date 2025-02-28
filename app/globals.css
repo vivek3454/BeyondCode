@@ -101,3 +101,11 @@ body {
   border: none !important;
   box-shadow: none !important;
 }
+
+.tiptap p.is-empty::before {
+  content: attr(data-placeholder);
+  color: #999;  /* Light gray text */
+  font-style: italic;
+  position: absolute;
+  pointer-events: none;
+}
