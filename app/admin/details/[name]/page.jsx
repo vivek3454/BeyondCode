@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { useApiQuery } from "@/hooks/useApiQuery";
 import { useRouter } from "next/navigation";
 import parse from 'html-react-parser';
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Trash2 } from "lucide-react";
 import DeleteAlertModal from "@/components/admin/DeleteAlertModal";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { DELETE } from "@/constants/apiMethods";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/monokai-sublime.css';
 
 const Details = () => {
     const menuItem = sessionStorage.getItem("menuItem")
@@ -34,6 +36,16 @@ const Details = () => {
         deleteContent({ contentId: data?.content[0]?._id }, { onSuccess: () => setIsDeleteContentModalOpen(false) });
     }
 
+    const contentRef = useRef(null);
+
+    useEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.querySelectorAll("pre code").forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        }
+    }, [data]);
+
 
     return (
         <div>
@@ -49,12 +61,12 @@ const Details = () => {
                     : <Button onClick={() => router.push(`/admin/details/${title}/add-details`)}>Add Details</Button>}
             </div>
 
-            <div className="w-full mt-10">
-                {(data && data?.content?.length == 0) && 
-                <p>No content added</p>
+            <div className="w-full mt-10 details">
+                {(data && data?.content?.length == 0) &&
+                    <p>No content added</p>
                 }
                 {data?.content.map(item =>
-                    <div key={item?._id} className="prose max-w-none h-full w-full">{parse(item?.contentString)}</div>
+                    <div ref={contentRef} key={item?._id} className="prose max-w-none p-0 h-full w-full">{item?.contentString && parse(item?.contentString?.replace(/class=/g, 'className='))}</div>
                 )}
             </div>
 
