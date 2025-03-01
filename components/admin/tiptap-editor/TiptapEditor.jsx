@@ -19,7 +19,6 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import LinkPopover from './LinkPopover'
 
-import { common, createLowlight } from "lowlight"
 import Blockquote from '@tiptap/extension-blockquote';
 import Table from '@tiptap/extension-table';
 import TableRow from '@tiptap/extension-table-row';
@@ -28,7 +27,7 @@ import TableHeader from '@tiptap/extension-table-header';
 import Typography from '@tiptap/extension-typography';
 import Youtube from '@tiptap/extension-youtube';
 import EmbedYtPopover from './EmbedYtPopover';
-const lowlight = createLowlight(common);
+import { CustomCodeBlockLowlight } from './CustomCodeBlockLowlight';
 
 
 const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
@@ -76,6 +75,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
 
     const suggestions = getSuggestions(onOpenLinkPopover, onOpenEmbedYtVideoPopover);
 
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -102,7 +102,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                 },
             }),
             HorizontalRule,
-            CodeBlockLowlight.configure({ lowlight, defaultLanguage: 'javascript' }),
+            CustomCodeBlockLowlight,
             Blockquote,
             Table.configure({
                 resizable: true,

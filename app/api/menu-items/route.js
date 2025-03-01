@@ -1,5 +1,4 @@
 import { connectToDatabase } from "@/lib/db";
-import Admin from "@/models/Admin";
 import MenuItem from "@/models/MenuItem";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
@@ -37,37 +36,63 @@ export async function PATCH(request) {
     try {
         const { menuItemId, title, isLink, type } = await request.json();
 
+        if (!menuItemId || !mongoose.Types.ObjectId.isValid(menuItemId)) {
+            return NextResponse.json(
+                { error: "Invalid or missing menuItemId" },
+                { status: 400 }
+            );
+        }
+
         if (!title) {
             return NextResponse.json(
                 { error: "Title is required" },
                 { status: 400 }
-            )
+            );
+        }
+
+        if (typeof isLink !== "boolean") {
+            return NextResponse.json(
+                { error: "isLink must be a boolean" },
+                { status: 400 }
+            );
+        }
+
+        if (!type || typeof type !== "string") {
+            return NextResponse.json(
+                { error: "Type is required and must be a string" },
+                { status: 400 }
+            );
         }
 
         await connectToDatabase();
 
-        await MenuItem.findByIdAndUpdate(
+        const updatedMenuItem = await MenuItem.findByIdAndUpdate(
             menuItemId,
-            {
-                title,
-                isLink,
-                type,
-            }
+            { title, isLink, type },
+            { new: true } // Returns updated document
         );
 
+        if (!updatedMenuItem) {
+            return NextResponse.json(
+                { error: "Menu item not found" },
+                { status: 404 }
+            );
+        }
+
         return NextResponse.json(
-            { message: "Menu item updated successfully" },
+            { message: "Menu item updated successfully", data: updatedMenuItem },
             { status: 200 }
-        )
+        );
     } catch (error) {
-        console.log("menu item update error", error);
+        console.error("Menu item update error:", error);
 
         return NextResponse.json(
             { error: "Failed to update menu item" },
             { status: 500 }
-        )
+        );
     }
 }
+
 export async function DELETE(request) {
     try {
         const { searchParams } = new URL(request.url);
@@ -138,7 +163,7 @@ export async function GET(request) {
                 menuItems,
                 nextCursor
             },
-            { status: 200 }
+            { status: 400 }
         )
     } catch (error) {
         console.log("get menu items error", error);

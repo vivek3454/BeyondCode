@@ -1,6 +1,7 @@
 import { DELETE } from "@/constants/apiMethods";
 import axiosInstance from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const apiCall = async ({ url, method, data }) => {
     try {
@@ -19,10 +20,14 @@ export function useApiMutation({ url, method, invalidateKey }) {
 
     return useMutation({
         mutationFn: (data) => apiCall({ url, method, data }),
-        onSuccess: () => {
+        onSuccess: (data) => {
+            toast.success(data?.message);
             if (invalidateKey) {
                 queryClient.invalidateQueries(invalidateKey);
             }
         },
+        onError: (error) => {
+            toast.error(error?.response?.data?.error);
+        }
     });
 }
