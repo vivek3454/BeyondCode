@@ -27,11 +27,13 @@ import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import Typography from '@tiptap/extension-typography';
 import Youtube from '@tiptap/extension-youtube';
+import EmbedYtPopover from './EmbedYtPopover';
 const lowlight = createLowlight(common);
 
 
 const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
     const [showLinkPopover, setShowLinkPopover] = useState(false);
+    const [showEmbedYtPopover, setShowEmbedYtPopover] = useState(false);
     const [editorInstance, setEditorInstance] = useState(null);
     const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
 
@@ -53,9 +55,26 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
 
         setShowLinkPopover(true);
     };
+    const onOpenEmbedYtVideoPopover = (editor) => {
+        setEditorInstance(editor);
+        if (!editor) {
+            return;
+        }
+
+        const { from } = editor.state.selection;
+        const coords = editor.view.coordsAtPos(from); // Get cursor position
+        const editorRect = editor.view.dom.getBoundingClientRect(); // Get editor position
+
+        setPopoverPosition({
+            top: coords.top - editorRect.top + window.scrollY + 30, // Adjust popover's position
+            left: coords.left - editorRect.left + window.scrollX,
+        });
+
+        setShowEmbedYtPopover(true);
+    };
 
 
-    const suggestions = getSuggestions(onOpenLinkPopover);
+    const suggestions = getSuggestions(onOpenLinkPopover, onOpenEmbedYtVideoPopover);
 
     const editor = useEditor({
         extensions: [
@@ -64,7 +83,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
             }),
             Slash.configure({
                 suggestion: {
-                    items: () => getSuggestions(onOpenLinkPopover),
+                    items: () => getSuggestions(onOpenLinkPopover, onOpenEmbedYtVideoPopover),
                 },
             }),
             Placeholder.configure({
@@ -166,6 +185,14 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                 <LinkPopover
                     editor={editorInstance}
                     setShowLinkPopover={setShowLinkPopover}
+                    popoverPosition={popoverPosition}
+                />
+            }
+
+            {showEmbedYtPopover &&
+                <EmbedYtPopover
+                    editor={editorInstance}
+                    setShowEmbedYtPopover={setShowEmbedYtPopover}
                     popoverPosition={popoverPosition}
                 />
             }

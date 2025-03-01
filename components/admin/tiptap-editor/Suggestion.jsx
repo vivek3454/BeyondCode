@@ -1,7 +1,7 @@
 import { createSuggestionsItems } from "@harshtalks/slash-tiptap";
 import { Heading1, Heading2, Heading3, List, ListOrdered, Type, Link, Minus, Code, TextQuote, Table, Youtube } from "lucide-react";
 
-export const getSuggestions = (onOpenLinkPopover) =>
+export const getSuggestions = (onOpenLinkPopover, onOpenEmbedYtVideoPopover) =>
     createSuggestionsItems([
         {
             title: "Text",
@@ -86,7 +86,7 @@ export const getSuggestions = (onOpenLinkPopover) =>
                     .chain()
                     .focus()
                     .deleteRange(range)
-                    .setNode("codeBlockLowlight", { language: "javascript" }) // ✅ Default: JavaScript
+                    .setNode("codeBlock", { language: "javascript" }) // ✅ Default: JavaScript
                     .run();
             },
         },
@@ -99,27 +99,29 @@ export const getSuggestions = (onOpenLinkPopover) =>
                 editor.chain().focus().deleteRange(range).toggleBlockquote().run();
             },
         },
-        {
-            title: "Table",
-            icon: <Table className="w-5 h-5 text-gray-600" />,
-            desc: "Insert a table",
-            searchTerms: ["table", "grid", "rows", "columns"],
-            command: ({ editor, range }) => {
-                editor.chain().focus().deleteRange(range)
-                    .insertTable({ rows: 3, cols: 3, withHeaderRow: false }) // Default: 3x3 Table
-                    .run();
-            },
-        },
+        // {
+        //     title: "Table",
+        //     icon: <Table className="w-5 h-5 text-gray-600" />,
+        //     desc: "Insert a table",
+        //     searchTerms: ["table", "grid", "rows", "columns"],
+        //     command: ({ editor, range }) => {
+        //         editor.chain().focus().deleteRange(range)
+        //             .insertTable({ rows: 3, cols: 3, withHeaderRow: false }) // Default: 3x3 Table
+        //             .run();
+        //     },
+        // },
         {
             title: "YouTube",
             icon: <Youtube className="w-5 h-5 text-gray-600" />,
             desc: "Embed a YouTube video",
             searchTerms: ["video", "youtube", "embed"],
             command: ({ editor, range }) => {
-                const url = prompt("Enter YouTube Video URL:");
-                if (url) {
-                    editor.chain().focus().deleteRange(range).setYoutubeVideo({ src: url }).run();
-                }
+                editor.chain().focus().deleteRange(range).run();
+                onOpenEmbedYtVideoPopover(editor);
+                // const url = prompt("Enter YouTube Video URL:");
+                // if (url) {
+                //     editor.chain().focus().deleteRange(range).setYoutubeVideo({ src: url }).run();
+                // }
             },
         },
     ]);
