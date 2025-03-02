@@ -7,6 +7,7 @@ import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import LogoutAlertModal from './LogoutAlertModal';
+import Search from './Search';
 
 
 const AdminHeader = () => {
@@ -46,6 +47,7 @@ const AdminHeader = () => {
                 <SidebarTrigger />
             </div>
             <div className='flex gap-2 items-center'>
+                <Search />
                 {session &&
                     <button className='hover:bg-slate-100 hover:dark:text-black rounded-full w-10 h-10 flex text-xl justify-center items-center' onClick={() => setIsLogoutModalOpen(true)}>
                         <LogOut className='w-5 h-5' />
