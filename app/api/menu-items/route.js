@@ -163,7 +163,7 @@ export async function GET(request) {
                 menuItems,
                 nextCursor
             },
-            { status: 400 }
+            { status: 200 }
         )
     } catch (error) {
         console.log("get menu items error", error);

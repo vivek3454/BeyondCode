@@ -1,9 +1,9 @@
 import { Loader as LoaderIcon } from 'lucide-react'
 import React from 'react'
 
-const Loader = () => {
+const Loader = ({ className }) => {
     return (
-        <div className='flex justify-center w-full'>
+        <div className={`flex justify-center w-full ${className}`}>
             <LoaderIcon className='animate-spin duration-1000' />
         </div>
     )

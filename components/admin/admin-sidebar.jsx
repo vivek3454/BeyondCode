@@ -13,7 +13,7 @@ import {
     SidebarMenuItem,
     useSidebar
 } from "@/components/ui/sidebar";
-import { useGetMenuItems } from "@/hooks/useGetMenuItems";
+import { useApiInfiniteQuery } from "@/hooks/useApiInfiniteQuery";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Loader from "../Loader";
@@ -27,7 +27,7 @@ export function AdminSidebar() {
     const [isAddMenuItemModalOpen, setIsAddMenuItemModalOpen] = useState(false);
     const { state } = useSidebar();
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useGetMenuItems(null, "menuItems");
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useApiInfiniteQuery({ url: "/menu-items", parentId: null, queryKey: "menuItems" });
 
     useEffect(() => {
         const allData = data?.pages?.map(page => page?.menuItems)
@@ -63,7 +63,7 @@ export function AdminSidebar() {
                                     menuItem={item}
                                 />
                             ))}
-                            {hasNextPage && <Button variant="secondary" size="sm" disabled={isFetchingNextPage} onClick={fetchNextPage}>{isFetchingNextPage ? "Loading..." : "Load More"}</Button>}
+                            {hasNextPage && <Button className="bg-transparent hover:bg-transparent justify-start px-2" variant="secondary" size="sm" disabled={isFetchingNextPage} onClick={fetchNextPage}>{isFetchingNextPage ? "Loading..." : "Load More"}</Button>}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

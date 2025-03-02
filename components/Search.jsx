@@ -2,26 +2,24 @@
 import {
     CommandDialog,
     CommandEmpty,
-    CommandGroup,
     CommandInput,
     CommandItem,
-    CommandList,
-    CommandSeparator,
-    CommandShortcut,
+    CommandList
 } from "@/components/ui/command";
+import { useApiQuery } from "@/hooks/useApiQuery";
+import { CommandLoading } from "cmdk";
 import {
-    Calculator,
-    Calendar,
-    CreditCard,
-    Search as SearchIcon,
-    Settings,
-    Smile,
-    User,
+    Search as SearchIcon
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
+import Loader from "./Loader";
 
 const Search = () => {
     const [open, setOpen] = useState(false)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [debouncedQuery, setDebouncedQuery] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         const down = (e) => {
@@ -35,6 +33,32 @@ const Search = () => {
         return () => document.removeEventListener("keydown", down)
     }, [])
 
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedQuery(searchQuery);
+        }, 500);
+
+        return () => clearTimeout(handler);
+    }, [searchQuery]);
+
+    const { data, isLoading, error } = useApiQuery({
+        url: "/user/search",
+        queryKey: "search",
+        params: { searchQuery: debouncedQuery },
+        options: { enabled: !!debouncedQuery && open }
+    });
+
+
+    const handleOnSelect = (item) => {
+        if (item?.isLink) {
+            const title = item?.title?.toLowerCase() || "";
+            sessionStorage.setItem("menuItem", JSON.stringify({ name: item?.title, id: item?._id }));
+            router.push(`/details/${title}`);
+            setOpen(false);
+        }
+    }
+
+
     return (
         <>
             <button onClick={() => setOpen(true)} className="rounded-md flex justify-between w-72 items-center px-3 py-2 bg-slate-100 dark:bg-[hsl(var(--sidebar-background))]">
@@ -46,42 +70,20 @@ const Search = () => {
                     <span className="text-xs">ctrl + </span>J
                 </kbd>
             </button>
-            <CommandDialog open={open} onOpenChange={setOpen}>
-                <CommandInput placeholder="Type a command or search..." />
+            <CommandDialog shouldFilter={false} open={open} onOpenChange={setOpen}>
+                <CommandInput value={searchQuery} onValueChange={setSearchQuery} placeholder="Search..." />
                 <CommandList>
-                    <CommandEmpty>No results found.</CommandEmpty>
-                    <CommandGroup heading="Suggestions">
-                        <CommandItem>
-                            <Calendar />
-                            <span>Calendar</span>
+                    {data?.searchResults?.length === 0 && <CommandEmpty>No results found.</CommandEmpty>}
+                    {isLoading && 
+                    <div className="h-8">
+                        <Loader className="mt-2" />
+                    </div>
+                    }
+                    {data?.searchResults.map((item) => (
+                        <CommandItem key={item?._id} onSelect={() => handleOnSelect(item)}>
+                            <span>{item?.title}</span>
                         </CommandItem>
-                        <CommandItem>
-                            <Smile />
-                            <span>Search Emoji</span>
-                        </CommandItem>
-                        <CommandItem>
-                            <Calculator />
-                            <span>Calculator</span>
-                        </CommandItem>
-                    </CommandGroup>
-                    <CommandSeparator />
-                    <CommandGroup heading="Settings">
-                        <CommandItem>
-                            <User />
-                            <span>Profile</span>
-                            <CommandShortcut>⌘P</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem>
-                            <CreditCard />
-                            <span>Billing</span>
-                            <CommandShortcut>⌘B</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem>
-                            <Settings />
-                            <span>Settings</span>
-                            <CommandShortcut>⌘S</CommandShortcut>
-                        </CommandItem>
-                    </CommandGroup>
+                    ))}
                 </CommandList>
             </CommandDialog>
         </>

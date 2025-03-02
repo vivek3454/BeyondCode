@@ -1,49 +1,36 @@
 'use client';
 
-import { Home, Book, Wrench, Lightbulb, Laptop, Pen, User, Mail, Search, Link as LucideLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import {
     Sidebar,
     SidebarContent,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
-} from "@/components/ui/sidebar"
+    useSidebar
+} from "@/components/ui/sidebar";
+import { useApiInfiniteQuery } from "@/hooks/useApiInfiniteQuery";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import Loader from "./Loader";
+import MenuItem from "./MenuItem";
+import { Button } from "./ui/button";
 
-const items = [
-    {
-        title: "Learning Log",
-        url: "/learning-log",
-        icon: <Book />,
-    },
-    {
-        title: "Packages & Tools",
-        url: "/packages-tools",
-        icon: <Wrench />,
-    },
-    {
-        title: "Tips & Tricks",
-        url: "/tips-tricks",
-        icon: <Lightbulb />,
-    },
-    {
-        title: "Test",
-        url: "/test",
-        icon: <LucideLink />,
-    },
-];
 
 export function AppSidebar() {
-    const pathname = usePathname();
+    const [sidebarItems, setSidebarItems] = useState([])
     const { state } = useSidebar();
-    console.log("state: ", state);
+
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useApiInfiniteQuery({ url: "/user/menu-items", parentId: null, queryKey: "menuItems" });
+
+    useEffect(() => {
+        const allData = data?.pages?.map(page => page?.menuItems)
+        setSidebarItems(allData?.flat());
+    }, [data])
+    console.log("data", data);
+
 
     return (
         <Sidebar variant="sidebar" collapsible="icon">
@@ -60,16 +47,14 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupContent className="mt-0">
                         <SidebarMenu>
-                            {items.map((item, i) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton className={`${pathname === item.url && "dark:bg-white dark:text-black"}`} asChild isActive={pathname === item.url}>
-                                        <Link href={item.url}>
-                                            {item.icon}
-                                            <span>{item.title}</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
+                            {isLoading && <Loader />}
+                            {sidebarItems?.map((item) => (
+                                <MenuItem
+                                    key={item?._id}
+                                    menuItem={item}
+                                />
                             ))}
+                            {hasNextPage && <Button className="bg-transparent hover:bg-transparent px-2 justify-start" variant="secondary" size="sm" disabled={isFetchingNextPage} onClick={fetchNextPage}>{isFetchingNextPage ? "Loading..." : "Load More"}</Button>}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
