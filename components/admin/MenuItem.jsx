@@ -12,6 +12,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { SidebarMenuButton, SidebarMenuItem, SidebarMenuSub } from '../ui/sidebar';
 import AddMenuItemModal from './AddMenuItemModal';
 import DeleteAlertModal from './DeleteAlertModal';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const MenuItem = ({ menuItem }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -73,10 +79,18 @@ const MenuItem = ({ menuItem }) => {
                 <Collapsible open={isOpen} onOpenChange={setIsOpen} className="group/collapsible">
                     <SidebarMenuButton className="data-[active=true]:text-black data-[active=true]:dark:text-white data-[active=true]:bg-sidebar-accent" asChild isActive={decodeURIComponent(currentPathValue) === title}>
                         <div className="flex justify-between items-center w-full">
-                            <button onClick={handleClick} className={`flex flex-1 items-center gap-2 ${menuItem.isLink ? "" : "cursor-default"}`}>
-                                {/* <item.icon className="w-5 h-5" /> */}
-                                <span>{menuItem?.title}</span>
-                            </button>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger className='w-full'>
+                                        <button onClick={handleClick} className={`flex flex-1 w-full items-center gap-2 ${menuItem?.isLink ? "" : "cursor-default"}`}>
+                                            <p className='line-clamp-1 text-left w-full'>{menuItem?.title}</p>
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{menuItem?.title}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                             <div className="flex items-center gap-1">
                                 {/* <Plus onClick={() => setIsAddMenuItemModalOpen(true)} className="cursor-pointer" /> */}
                                 <DropdownMenu open={isDropDownMenuOpen} onOpenChange={setIsDropDownMenuOpen}>

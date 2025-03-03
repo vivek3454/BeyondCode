@@ -35,7 +35,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-200 text-black dark:from-gray-900 dark:to-gray-950 dark:text-white p-8">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-200 text-black dark:from-gray-900 dark:to-gray-950 dark:text-white px-2 py-4 sm:px-8">
       <main className="container mx-auto">
         <nav className="flex justify-between gap-3 mb-8">
           <Link href="/" className='text-2xl text-black dark:text-white font-semibold flex gap-[2px] items-center'>
