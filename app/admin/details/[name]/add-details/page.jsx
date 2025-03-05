@@ -50,7 +50,7 @@ const AddDetails = () => {
 
     return (
         <div className='relative'>
-            <div className='bg-white py-2 sticky top-16 z-20 flex justify-between items-center gap-3'>
+            <div className='bg-white dark:bg-black dark:text-white py-2 sticky top-16 z-20 flex justify-between items-center gap-3'>
                 <h1 className='text-xl font-semibold'>{data?.content[0]?.contentString ? "Update Details" : "Add Details"}</h1>
                 <Button disabled={isLoading || isUpdateContentLoading} onClick={getContentString}>{(isLoading || isUpdateContentLoading) ? "Submitting..." : "Submit Changes"}</Button>
             </div>

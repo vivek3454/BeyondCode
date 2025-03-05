@@ -82,9 +82,9 @@ const MenuItem = ({ menuItem }) => {
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger className='w-full'>
-                                        <button onClick={handleClick} className={`flex flex-1 w-full items-center gap-2 ${menuItem?.isLink ? "" : "cursor-default"}`}>
+                                        <span onClick={handleClick} className={`flex flex-1 w-full items-center gap-2 ${menuItem?.isLink ? "" : "cursor-default"}`}>
                                             <p className='line-clamp-1 text-left w-full'>{menuItem?.title}</p>
-                                        </button>
+                                        </span>
                                     </TooltipTrigger>
                                     <TooltipContent>
                                         <p>{menuItem?.title}</p>

@@ -131,3 +131,51 @@ td {
   height: 40px;
   /* Adjust row height */
 }
+
+.code-block-container {
+  position: relative;
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: monospace;
+}
+
+pre {
+  /* background: #1e1e1e !important; */
+  width: calc(100vw - 20rem);
+}
+
+.codeBlock {
+  position: relative;
+  background: #282c34;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.copyButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.copyButton:hover {
+  background: #666;
+}
+
+@media screen and (max-width: 768px) {
+  pre {
+    width: 100%;
+  }
+
+}
+
+.prose :where(tbody td:first-child, tfoot td:first-child):not(:where([class~=not-prose], [class~=not-prose] *)) {
+  padding-inline-start: .5714286em;
+}

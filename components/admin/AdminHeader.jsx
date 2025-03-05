@@ -1,11 +1,10 @@
 "use client";
+import { LogOut } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
-import { SidebarTrigger } from '../ui/sidebar';
-import { signOut, useSession } from 'next-auth/react';
-import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import LogoutAlertModal from './LogoutAlertModal';
 import Search from './Search';
 
@@ -43,9 +42,7 @@ const AdminHeader = () => {
 
     return (
         <div className='border-b-2 dark:bg-black w-full sticky bg-white top-0 px-5 pl-4 h-16 z-10 flex justify-between items-center'>
-            <div className='flex gap-2 items-center'>
-                <SidebarTrigger />
-            </div>
+            <div></div>
             <div className='flex gap-2 items-center'>
                 <Search />
                 {session &&

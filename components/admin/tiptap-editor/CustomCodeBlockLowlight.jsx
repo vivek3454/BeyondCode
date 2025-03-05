@@ -1,43 +1,40 @@
-
+import { useState } from 'react';
 import { NodeViewWrapper, NodeViewContent } from '@tiptap/react';
-import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
-import { common, createLowlight } from "lowlight"
-const lowlight = createLowlight(common);
-import { Copy } from 'lucide-react';
-import { toast } from 'sonner';
+import { Check, Copy } from 'lucide-react'; // Icons for UI
+// import classes from './code-block-component.module.css'; // CSS file for styling
 
-const CustomCodeBlock = (props) => {
-    // console.log("CodeBlockLowlight", CodeBlockLowlight);
+function CodeBlockComponent({ node }) {
+    const [copied, setCopied] = useState(false);
 
-    const copyToClipboard = () => {
-        const codeText = props.node.textContent;
-        navigator.clipboard.writeText(codeText).then(() => {
-            toast.success("Copied to clipboard!");
-        });
+    // Function to copy code content
+    const copyToClipboard = async () => {
+        console.log("function copyToClipboard called");
+
+        const codeContent = node?.content?.content[0]?.text || ''; // Fetch code content properly
+        console.log("codeContent: ", codeContent);
+
+        if (codeContent) {
+            await navigator.clipboard.writeText(codeContent);
+            setCopied(true);
+
+            // Reset "copied" state after 2 seconds
+            setTimeout(() => setCopied(false), 2000);
+        }
     };
 
     return (
-        <div className="relative group">
-            <button
-                onClick={copyToClipboard}
-                className="absolute top-2 right-2 p-1 bg-gray-800 text-white rounded transition"
-            >
-                <Copy size={16} />
+        <NodeViewWrapper className="codeBlock not-prose">
+            {/* Copy Button */}
+            <button onClick={copyToClipboard} className="copyButton">
+                {copied ? <Check size={16} /> : <Copy size={16} />}
             </button>
 
-            <pre className="bg-gray-900 text-white p-4 rounded-md">
+            {/* Render code content */}
+            <pre>
                 <NodeViewContent as="code" />
             </pre>
-        </div>
+        </NodeViewWrapper>
     );
-};
+}
 
-// Extend CodeBlockLowlight with a custom node view
-export const CustomCodeBlockLowlight = CodeBlockLowlight.extend({
-    addNodeView() {
-        return (props) => {
-            return <CustomCodeBlock {...props} />;
-        };
-    },
-}).configure({ lowlight });
-
+export default CodeBlockComponent;

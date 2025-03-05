@@ -1,6 +1,6 @@
 'use client'
 
-import { EditorContent, useEditor } from '@tiptap/react'
+import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { getSuggestions } from './Suggestion'
 import 'highlight.js/styles/monokai-sublime.css';
@@ -27,8 +27,10 @@ import TableHeader from '@tiptap/extension-table-header';
 import Typography from '@tiptap/extension-typography';
 import Youtube from '@tiptap/extension-youtube';
 import EmbedYtPopover from './EmbedYtPopover';
-import { CustomCodeBlockLowlight } from './CustomCodeBlockLowlight';
+import { common, createLowlight } from "lowlight";
+import CodeBlockComponent from './CustomCodeBlockLowlight';
 
+const lowlight = createLowlight(common);
 
 const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
     const [showLinkPopover, setShowLinkPopover] = useState(false);
@@ -102,7 +104,11 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                 },
             }),
             HorizontalRule,
-            CustomCodeBlockLowlight,
+            CodeBlockLowlight.extend({
+                addNodeView() {
+                    return ReactNodeViewRenderer(CodeBlockComponent);
+                },
+            }).configure({ lowlight }),
             Blockquote,
             Table.configure({
                 resizable: true,
@@ -134,6 +140,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
         immediatelyRender: false,
     });
 
+
     useImperativeHandle(ref, () => ({
         getContent: () => editor?.getHTML() || '',
     }))
@@ -149,15 +156,11 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
 
     return (
         <div className="w-full relative">
-            <pre>
-                <code class="language-html">
-                </code>
-            </pre>
             <SlashCmdProvider>
-                <EditorContent editor={editor} className="py-2 prose max-w-none h-full w-full" />
+                <EditorContent editor={editor} className="py-2 prose max-w-none h-full dark:prose-invert w-full" />
                 <SlashCmd.Root editor={editor}>
                     <SlashCmd.Cmd>
-                        <SlashCmd.List className='bg-white shadow-md border rounded-md flex flex-col gap-1 py-1 w-[300px] max-h-96 overflow-y-auto'>
+                        <SlashCmd.List className='bg-white dark:bg-gray-800 dark:text-white shadow-md border rounded-md flex flex-col gap-1 py-1 w-[300px] max-h-96 overflow-y-auto'>
                             {suggestions.map((item) => {
                                 return (
                                     <SlashCmd.Item
@@ -166,7 +169,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                                             item.command(val);
                                         }}
                                         key={item.title}
-                                        className='cursor-pointer px-4 py-1 flex items-center gap-2 group hover:bg-gray-100'
+                                        className='cursor-pointer px-4 py-1 flex items-center gap-2 group hover:bg-gray-100 dark:hover:bg-gray-600'
                                     >
                                         <div className='w-9 h-9 bg-gray-50 group-hover:bg-white rounded border flex justify-center items-center'>{item.icon}</div>
                                         <div>
