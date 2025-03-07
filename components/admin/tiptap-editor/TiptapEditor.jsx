@@ -1,45 +1,50 @@
-'use client'
+"use client";
 
-import { EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import { getSuggestions } from './Suggestion'
-import 'highlight.js/styles/monokai-sublime.css';
+import { EditorContent, ReactNodeViewRenderer, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { getSuggestions } from "./Suggestion";
+import "highlight.js/styles/monokai-sublime.css";
 
 import {
     Slash,
     SlashCmd,
     SlashCmdProvider,
-    enableKeyboardNavigation
-} from "@harshtalks/slash-tiptap"
+    enableKeyboardNavigation,
+} from "@harshtalks/slash-tiptap";
 // import 'highlight.js/styles/github-dark.css';
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight"
-import HorizontalRule from '@tiptap/extension-horizontal-rule'
-import Link from '@tiptap/extension-link'
-import Placeholder from '@tiptap/extension-placeholder'
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
-import LinkPopover from './LinkPopover'
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import LinkPopover from "./LinkPopover";
 
-import Blockquote from '@tiptap/extension-blockquote';
-import Table from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import Typography from '@tiptap/extension-typography';
-import Youtube from '@tiptap/extension-youtube';
-import EmbedYtPopover from './EmbedYtPopover';
+import Blockquote from "@tiptap/extension-blockquote";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
+import Typography from "@tiptap/extension-typography";
+import Youtube from "@tiptap/extension-youtube";
+import EmbedYtPopover from "./EmbedYtPopover";
 import { common, createLowlight } from "lowlight";
-import CodeBlockComponent from './CustomCodeBlockLowlight';
+import CodeBlockComponent from "./CustomCodeBlockLowlight";
+import SelectionPopover from "./SelectionPopover";
+import Underline from "@tiptap/extension-underline";
+import Highlight from "@tiptap/extension-highlight";
+import Strike from "@tiptap/extension-strike";
 
 const lowlight = createLowlight(common);
 
 const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
     const [showLinkPopover, setShowLinkPopover] = useState(false);
+    const [showSelectionPopover, setShowSelectionPopover] = useState(false);
     const [showEmbedYtPopover, setShowEmbedYtPopover] = useState(false);
     const [editorInstance, setEditorInstance] = useState(null);
     const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
 
-
     const onOpenLinkPopover = (editor) => {
+        setShowEmbedYtPopover(false);
         setEditorInstance(editor);
         if (!editor) {
             return;
@@ -57,6 +62,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
         setShowLinkPopover(true);
     };
     const onOpenEmbedYtVideoPopover = (editor) => {
+        setShowLinkPopover(false);
         setEditorInstance(editor);
         if (!editor) {
             return;
@@ -74,20 +80,25 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
         setShowEmbedYtPopover(true);
     };
 
-
-    const suggestions = getSuggestions(onOpenLinkPopover, onOpenEmbedYtVideoPopover);
-
+    const suggestions = getSuggestions(
+        onOpenLinkPopover,
+        onOpenEmbedYtVideoPopover
+    );
 
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
-                codeBlock: false
+                codeBlock: false,
             }),
+            Underline,
+            Highlight.configure({ multicolor: true }),
             Slash.configure({
                 suggestion: {
-                    items: () => getSuggestions(onOpenLinkPopover, onOpenEmbedYtVideoPopover),
+                    items: () =>
+                        getSuggestions(onOpenLinkPopover, onOpenEmbedYtVideoPopover),
                 },
             }),
+            Strike,
             Placeholder.configure({
                 placeholder: `Type "/" for commands`,
             }),
@@ -129,21 +140,65 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                 keydown: (_, v) => enableKeyboardNavigation(v),
             },
             handleClick: (view, pos, event) => {
-                const attrs = view.state.doc.nodeAt(pos)?.marks?.find(m => m.type.name === "link")?.attrs;
+                const attrs = view.state.doc
+                    .nodeAt(pos)
+                    ?.marks?.find((m) => m.type.name === "link")?.attrs;
                 if (attrs) {
                     event.preventDefault();
                     onOpenLinkPopover(editor);
                 }
-            }
+            },
         },
         content: contentString,
         immediatelyRender: false,
+        onSelectionUpdate: ({ editor }) => {
+            const { from, to } = editor.state.selection;
+        
+            if (from === to) {
+                setShowSelectionPopover(false);
+                return;
+            }
+        
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) return;
+        
+            const range = selection.getRangeAt(0);
+            const rects = range.getClientRects();
+            
+            if (rects.length === 0) return;
+        
+            // Get the last rectangle to handle end-of-line selections
+            const lastRect = rects[rects.length - 1];
+        
+            // Approximate popover size
+            const popoverWidth = 800;
+            const popoverHeight = 80;
+            const padding = 8; // Avoid touching text
+        
+            let top = lastRect.top + window.scrollY - popoverHeight - padding;
+            let left = lastRect.left + window.scrollX - popoverWidth / 2 + lastRect.width / 2;
+        
+            // Prevent popover overflow (viewport boundaries)
+            if (left + popoverWidth > window.innerWidth) {
+                left = window.innerWidth - popoverWidth - padding;
+            }
+            if (left < 0) {
+                left = padding;
+            }
+            if (top < 0) {
+                top = lastRect.bottom + window.scrollY + padding; // Move below if not enough space above
+            }
+        
+            setPopoverPosition({ top, left });
+            setShowSelectionPopover(true);
+        }
+        
+        
     });
 
-
     useImperativeHandle(ref, () => ({
-        getContent: () => editor?.getHTML() || '',
-    }))
+        getContent: () => editor?.getHTML() || "",
+    }));
 
     useEffect(() => {
         if (editor && contentString) {
@@ -153,14 +208,16 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
 
     if (!editor) return <p>Loading editor...</p>;
 
-
     return (
         <div className="w-full relative">
             <SlashCmdProvider>
-                <EditorContent editor={editor} className="py-2 prose max-w-none h-full dark:prose-invert w-full" />
+                <EditorContent
+                    editor={editor}
+                    className="py-2 prose max-w-none h-full dark:prose-invert w-full"
+                />
                 <SlashCmd.Root editor={editor}>
                     <SlashCmd.Cmd>
-                        <SlashCmd.List className='bg-white dark:bg-gray-800 dark:text-white shadow-md border rounded-md flex flex-col gap-1 py-1 w-[300px] max-h-96 overflow-y-auto'>
+                        <SlashCmd.List className="bg-white dark:bg-gray-800 dark:text-white shadow-md border rounded-md flex flex-col gap-1 py-1 w-[300px] max-h-96 overflow-y-auto">
                             {suggestions.map((item) => {
                                 return (
                                     <SlashCmd.Item
@@ -169,12 +226,14 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                                             item.command(val);
                                         }}
                                         key={item.title}
-                                        className='cursor-pointer px-4 py-1 flex items-center gap-2 group hover:bg-gray-100 dark:hover:bg-gray-600'
+                                        className="cursor-pointer px-4 py-1 flex items-center gap-2 group hover:bg-gray-100 dark:hover:bg-gray-600"
                                     >
-                                        <div className='w-9 h-9 bg-gray-50 group-hover:bg-white rounded border flex justify-center items-center'>{item.icon}</div>
+                                        <div className="w-9 h-9 bg-gray-50 group-hover:bg-white rounded border flex justify-center items-center">
+                                            {item.icon}
+                                        </div>
                                         <div>
-                                            <h2 className='capitalize text-sm'>{item.title}</h2>
-                                            <p className='text-gray-500 text-sm'>{item.desc}</p>
+                                            <h2 className="capitalize text-sm">{item.title}</h2>
+                                            <p className="text-gray-500 text-sm">{item.desc}</p>
                                         </div>
                                     </SlashCmd.Item>
                                 );
@@ -184,23 +243,31 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                 </SlashCmd.Root>
             </SlashCmdProvider>
 
-            {showLinkPopover &&
+            {showLinkPopover && (
                 <LinkPopover
                     editor={editorInstance}
                     setShowLinkPopover={setShowLinkPopover}
                     popoverPosition={popoverPosition}
                 />
-            }
+            )}
 
-            {showEmbedYtPopover &&
+            {showEmbedYtPopover && (
                 <EmbedYtPopover
                     editor={editorInstance}
                     setShowEmbedYtPopover={setShowEmbedYtPopover}
                     popoverPosition={popoverPosition}
                 />
-            }
-        </div>
-    )
-})
+            )}
 
-export default TiptapEditor
+            {showSelectionPopover && (
+                <SelectionPopover
+                    editor={editor}
+                    setShowSelectionPopover={setShowSelectionPopover}
+                    popoverPosition={popoverPosition}
+                />
+            )}
+        </div>
+    );
+});
+
+export default TiptapEditor;

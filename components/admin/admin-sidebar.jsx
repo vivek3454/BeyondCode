@@ -46,7 +46,7 @@ export function AdminSidebar() {
                     {state === "expanded" && "BeyondCode"}
                 </Link>
             </SidebarHeader>
-            <SidebarContent>
+            <SidebarContent className="scrollbar-custom">
                 <SidebarGroup>
                     <SidebarGroupContent className="mt-0">
                         <SidebarMenu>

@@ -49,7 +49,7 @@ const LinkPopover = ({ editor, popoverPosition, setShowLinkPopover }) => {
 
     return (
         <div
-            className="absolute bg-white shadow-lg border p-3 rounded-md flex flex-col gap-5 max-w-md w-full"
+            className="absolute bg-white dark:bg-gray-900 shadow-lg border p-3 rounded-md flex flex-col gap-5 max-w-md w-full"
             style={{ top: popoverPosition.top + 40, left: popoverPosition.left }}
         >
             <div className="flex justify-between items-center gap-3">
