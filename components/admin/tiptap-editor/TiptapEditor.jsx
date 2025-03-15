@@ -33,15 +33,19 @@ import SelectionPopover from "./SelectionPopover";
 import Underline from "@tiptap/extension-underline";
 import Highlight from "@tiptap/extension-highlight";
 import Strike from "@tiptap/extension-strike";
+import CustomSkeleton from "@/components/CustomSkeleton";
+import { useParams } from "next/navigation";
+import { useApiQuery } from "@/hooks/useApiQuery";
 
 const lowlight = createLowlight(common);
 
-const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
+const TiptapEditor = forwardRef((_, ref) => {
     const [showLinkPopover, setShowLinkPopover] = useState(false);
     const [showSelectionPopover, setShowSelectionPopover] = useState(false);
     const [showEmbedYtPopover, setShowEmbedYtPopover] = useState(false);
     const [editorInstance, setEditorInstance] = useState(null);
     const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 });
+    const params = useParams();
 
     const onOpenLinkPopover = (editor) => {
         setShowEmbedYtPopover(false);
@@ -55,7 +59,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
         const editorRect = editor.view.dom.getBoundingClientRect(); // Get editor position
 
         setPopoverPosition({
-            top: coords.top - editorRect.top + window.scrollY + 30, // Adjust popover's position
+            top: coords.top - editorRect.top + 30, // Adjust popover's position
             left: coords.left - editorRect.left + window.scrollX,
         });
 
@@ -73,7 +77,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
         const editorRect = editor.view.dom.getBoundingClientRect(); // Get editor position
 
         setPopoverPosition({
-            top: coords.top - editorRect.top + window.scrollY + 30, // Adjust popover's position
+            top: coords.top - editorRect.top + 30, // Adjust popover's position
             left: coords.left - editorRect.left + window.scrollX,
         });
 
@@ -84,6 +88,15 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
         onOpenLinkPopover,
         onOpenEmbedYtVideoPopover
     );
+
+    const { data, isLoading: isGetContentLoading, error } = useApiQuery({
+        url: "/content",
+        queryKey: "content",
+        params: { menuItemId: params?.name }
+    });
+
+    console.log("data content", data);
+
 
     const editor = useEditor({
         extensions: [
@@ -98,7 +111,7 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                         getSuggestions(onOpenLinkPopover, onOpenEmbedYtVideoPopover),
                 },
             }),
-            Strike,
+            // Strike,
             Placeholder.configure({
                 placeholder: `Type "/" for commands`,
             }),
@@ -114,13 +127,13 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                     },
                 },
             }),
-            HorizontalRule,
+            // HorizontalRule,
             CodeBlockLowlight.extend({
                 addNodeView() {
                     return ReactNodeViewRenderer(CodeBlockComponent);
                 },
             }).configure({ lowlight }),
-            Blockquote,
+            // Blockquote,
             Table.configure({
                 resizable: true,
             }),
@@ -149,35 +162,35 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
                 }
             },
         },
-        content: contentString,
+        content: data?.content[0]?.contentString,
         immediatelyRender: false,
         onSelectionUpdate: ({ editor }) => {
             const { from, to } = editor.state.selection;
-        
+
             if (from === to) {
                 setShowSelectionPopover(false);
                 return;
             }
-        
+
             const selection = window.getSelection();
             if (!selection || selection.rangeCount === 0) return;
-        
+
             const range = selection.getRangeAt(0);
             const rects = range.getClientRects();
-            
+
             if (rects.length === 0) return;
-        
+
             // Get the last rectangle to handle end-of-line selections
             const lastRect = rects[rects.length - 1];
-        
+
             // Approximate popover size
             const popoverWidth = 800;
             const popoverHeight = 80;
             const padding = 8; // Avoid touching text
-        
+
             let top = lastRect.top + window.scrollY - popoverHeight - padding;
             let left = lastRect.left + window.scrollX - popoverWidth / 2 + lastRect.width / 2;
-        
+
             // Prevent popover overflow (viewport boundaries)
             if (left + popoverWidth > window.innerWidth) {
                 left = window.innerWidth - popoverWidth - padding;
@@ -188,33 +201,37 @@ const TiptapEditor = forwardRef(({ contentString = "" }, ref) => {
             if (top < 0) {
                 top = lastRect.bottom + window.scrollY + padding; // Move below if not enough space above
             }
-        
+
             setPopoverPosition({ top, left });
             setShowSelectionPopover(true);
         }
-        
-        
+
+
     });
 
     useImperativeHandle(ref, () => ({
         getContent: () => editor?.getHTML() || "",
+        contentId: data?.content[0]?._id,
     }));
 
     useEffect(() => {
-        if (editor && contentString) {
-            editor.commands.setContent(contentString);
+        if (editor && data?.content[0]?.contentString) {
+            setTimeout(() => editor.commands.setContent(data?.content[0]?.contentString));
         }
-    }, [editor, contentString]);
+    }, [editor,data]);
 
     if (!editor) return <p>Loading editor...</p>;
 
     return (
         <div className="w-full relative">
             <SlashCmdProvider>
-                <EditorContent
-                    editor={editor}
-                    className="py-2 prose max-w-none h-full dark:prose-invert w-full"
-                />
+                {isGetContentLoading ?
+                    <CustomSkeleton />
+                    : <EditorContent
+                        editor={editor}
+                        className="py-2 prose max-w-none h-full dark:prose-invert w-full"
+                    />
+                }
                 <SlashCmd.Root editor={editor}>
                     <SlashCmd.Cmd>
                         <SlashCmd.List className="bg-white dark:bg-gray-800 dark:text-white shadow-md border rounded-md flex flex-col gap-1 py-1 w-[300px] max-h-96 overflow-y-auto">

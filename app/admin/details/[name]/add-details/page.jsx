@@ -9,7 +9,8 @@ import { useRef, useState } from 'react';
 
 const AddDetails = () => {
     const router = useRouter();
-     const params = useParams();
+    const params = useParams();
+    const [contentId, setContentId] = useState("");
 
     const editorRef = useRef(null);
     const { mutate: addContent, isLoading } = useApiMutation({
@@ -23,25 +24,22 @@ const AddDetails = () => {
         invalidateKey: ["content"],
     });
 
-    const { data, isLoading: isGetContentLoading, error } = useApiQuery({
-        url: "/content",
-        queryKey: "content",
-        params: { menuItemId: params?.name }
-    });
-
-    console.log("data content",data);
-    
 
     const getContentString = () => {
         if (editorRef.current) {
             const contentString = editorRef.current.getContent()
+            const contentId = editorRef.current.contentId
+            setContentId(contentId)
+            console.log("contentString",contentString);
+            console.log("contentId",contentId);
+            
 
             if (contentString) {
-                if (data?.content[0]?.contentString) {
-                    updateContent({ contentString, contentId: data?.content[0]?._id }, { onSuccess: () => router.push(`/admin/details/${params?.name}`) });
+                if (contentId) {
+                    updateContent({ contentString, contentId }, { onSuccess: () => router.push(`/admin/details/${params?.name}`) });
                 }
                 else {
-                    addContent({ contentString, menuItemId: params?.id }, { onSuccess: () => router.push(`/admin/details/${params?.name}`) });
+                    addContent({ contentString, menuItemId: params?.name }, { onSuccess: () => router.push(`/admin/details/${params?.name}`) });
                 }
             }
         }
@@ -50,11 +48,11 @@ const AddDetails = () => {
     return (
         <div className='relative'>
             <div className='bg-white dark:bg-black dark:text-white py-2 sticky top-16 z-20 flex justify-between items-center gap-3'>
-                <h1 className='text-xl font-semibold'>{data?.content[0]?.contentString ? "Update Details" : "Add Details"}</h1>
+                <h1 className='text-xl font-semibold'>{contentId ? "Update Details" : "Add Details"}</h1>
                 <Button disabled={isLoading || isUpdateContentLoading} onClick={getContentString}>{(isLoading || isUpdateContentLoading) ? "Submitting..." : "Submit Changes"}</Button>
             </div>
 
-            <TiptapEditor contentString={data?.content[0]?.contentString} ref={editorRef} />
+            <TiptapEditor ref={editorRef} />
         </div>
     )
 }

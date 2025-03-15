@@ -29,12 +29,13 @@ const Details = () => {
     });
 
     console.log("menuItemData", menuItemData);
-
+    
     const { data, isLoading, error } = useApiQuery({
         url: "/content",
         queryKey: "content",
         params: { menuItemId: params?.name }
     });
+    console.log("data", data);
 
     const { mutate: deleteContent, isLoading: isDeleteContentLoading } = useApiMutation({
         url: "/content",
@@ -84,12 +85,12 @@ const Details = () => {
                     <h1 className='text-[2rem] font-extrabold capitalize'>{menuItemData?.menuItem?.title}</h1>
                     {data && ((data?.content?.length > 0) ?
                         <div className="flex items-center gap-2">
-                            <Button onClick={() => router.push(`/admin/details/${title}/add-details`)}>Update Details</Button>
+                            <Button onClick={() => router.push(`/admin/details/${params?.name}/add-details`)}>Update Details</Button>
                             <Button className="bg-destructive hover:bg-destructive/90 dark:bg-red-500 dark:hover:bg-red-600 dark:text-white" onClick={() => setIsDeleteContentModalOpen(true)}>
                                 <Trash2 />
                             </Button>
                         </div>
-                        : <Button onClick={() => router.push(`/admin/details/${data?.content?.[0]?._id}/add-details`)}>Add Details</Button>)}
+                        : <Button onClick={() => router.push(`/admin/details/${params?.name}/add-details`)}>Add Details</Button>)}
                 </div>}
 
             {data?.content?.length === 0 && <p className="mt-10">No content added</p>}
