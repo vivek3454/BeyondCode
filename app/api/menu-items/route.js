@@ -11,7 +11,7 @@ export async function POST(request) {
             return NextResponse.json(
                 { error: "Title is required" },
                 { status: 400 }
-            )
+            );
         }
 
         await connectToDatabase();
@@ -21,14 +21,14 @@ export async function POST(request) {
         return NextResponse.json(
             { message: "Menu item created successfully" },
             { status: 201 }
-        )
+        );
     } catch (error) {
         console.log("menu item creation error", error);
 
         return NextResponse.json(
             { error: "Failed to create menu item" },
             { status: 500 }
-        )
+        );
     }
 }
 
@@ -104,7 +104,7 @@ export async function DELETE(request) {
             return NextResponse.json(
                 { message: "Invalid menuItemId" },
                 { status: 400 }
-            )
+            );
         }
 
         const deletedMenuItem = await MenuItem.findByIdAndDelete(menuItemId);
@@ -113,20 +113,20 @@ export async function DELETE(request) {
             return NextResponse.json(
                 { message: "Menu item not found" },
                 { status: 404 }
-            )
+            );
         }
 
         return NextResponse.json(
             { message: "Menu item deleted successfully" },
             { status: 200 }
-        )
+        );
     } catch (error) {
         console.log("menu item delete error", error);
 
         return NextResponse.json(
             { error: "Failed to delete menu item" },
             { status: 500 }
-        )
+        );
     }
 }
 
@@ -164,13 +164,13 @@ export async function GET(request) {
                 nextCursor
             },
             { status: 200 }
-        )
+        );
     } catch (error) {
         console.log("get menu items error", error);
 
         return NextResponse.json(
             { error: "Failed to get menu items" },
             { status: 500 }
-        )
+        );
     }
 }

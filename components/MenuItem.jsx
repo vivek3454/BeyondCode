@@ -22,7 +22,6 @@ const MenuItem = ({ menuItem }) => {
     const currentPathValue = useMemo(() => pathname.split("/")[2], [pathname]);
 
     const router = useRouter();
-    const title = menuItem?.title?.toLowerCase() || "";
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: isLoadingMenuItems } = useApiInfiniteQuery({ url: "/user/menu-items", parentId: menuItem?._id, queryKey: `menuItems-${menuItem?._id}`, limit: 10, enabled: isOpen });
 
     useEffect(() => {
@@ -43,7 +42,7 @@ const MenuItem = ({ menuItem }) => {
     return (
         <SidebarMenuItem>
             <Collapsible open={isOpen} onOpenChange={setIsOpen} className="group/collapsible">
-                <SidebarMenuButton className="data-[active=true]:text-black data-[active=true]:dark:text-white data-[active=true]:bg-sidebar-accent" asChild isActive={decodeURIComponent(currentPathValue) === title}>
+                <SidebarMenuButton className="data-[active=true]:text-black data-[active=true]:dark:text-white data-[active=true]:bg-sidebar-accent" asChild isActive={currentPathValue === menuItem?._id}>
                     <div className="flex justify-between items-center w-full">
                         <TooltipProvider>
                             <Tooltip>

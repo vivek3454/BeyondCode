@@ -15,7 +15,7 @@ const eslintConfig = [
     rules: {
       semi: ["error", "always"], // Enforce semicolons
       quotes: ["error", "double"], // Enforce double quotes
-      indent: ["error", 4], // Enforce 2-space indentation
+      // indent: ["error", 4], // Enforce 2-space indentation
     }
   }
 

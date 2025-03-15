@@ -38,13 +38,13 @@ export async function GET(request) {
                 nextCursor
             },
             { status: 200 }
-        )
+        );
     } catch (error) {
         console.log("get menu items error", error);
 
         return NextResponse.json(
             { error: "Failed to get menu items" },
             { status: 500 }
-        )
+        );
     }
 }
