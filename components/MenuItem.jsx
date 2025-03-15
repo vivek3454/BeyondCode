@@ -35,8 +35,7 @@ const MenuItem = ({ menuItem }) => {
 
     const handleClick = () => {
         if (menuItem?.isLink) {
-            sessionStorage.setItem("menuItem", JSON.stringify({ name: menuItem?.title, id: menuItem?._id }));
-            router.push(`/details/${title}`);
+            router.push(`/details/${menuItem?._id}`);
         }
     }
 

@@ -12,7 +12,7 @@ export async function GET(request) {
         let menuItemId = searchParams.get("menuItemId");
 
 
-        const content = await Content.find({ menuItemId })
+        const content = await Content.find({ menuItemId }).populate("menuItemId");
 
         return NextResponse.json(
             {
@@ -20,13 +20,13 @@ export async function GET(request) {
                 content
             },
             { status: 200 }
-        )
+        );
     } catch (error) {
         console.log("get content error", error);
 
         return NextResponse.json(
             { error: "Failed to get content" },
             { status: 500 }
-        )
+        );
     }
 }

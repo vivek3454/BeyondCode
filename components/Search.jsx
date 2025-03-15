@@ -51,9 +51,7 @@ const Search = () => {
 
     const handleOnSelect = (item) => {
         if (item?.isLink) {
-            const title = item?.title?.toLowerCase() || "";
-            sessionStorage.setItem("menuItem", JSON.stringify({ name: item?.title, id: item?._id }));
-            router.push(`/details/${title}`);
+            router.push(`/details/${item?._id}`);
             setOpen(false);
         }
     }

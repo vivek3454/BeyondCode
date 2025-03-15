@@ -50,9 +50,7 @@ const Search = () => {
 
     const handleOnSelect = (item) => {
         if (item?.isLink) {
-            const title = item?.title?.toLowerCase() || "";
-            sessionStorage.setItem("menuItem", JSON.stringify({ name: item?.title, id: item?._id }));
-            router.push(`/admin/details/${title}`);
+            router.push(`/admin/details/${item?._id}`);
             setOpen(false);
         }
     }
@@ -73,10 +71,10 @@ const Search = () => {
                 <CommandInput value={searchQuery} onValueChange={setSearchQuery} placeholder="Search..." />
                 <CommandList>
                     {data?.searchResults?.length === 0 && <CommandEmpty>No results found.</CommandEmpty>}
-                    {isLoading && 
-                    <div className="h-8">
-                        <Loader className="mt-2" />
-                    </div>
+                    {isLoading &&
+                        <div className="h-8">
+                            <Loader className="mt-2" />
+                        </div>
                     }
                     {data?.searchResults.map((item) => (
                         <CommandItem key={item?._id} onSelect={() => handleOnSelect(item)}>

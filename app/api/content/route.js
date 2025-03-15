@@ -11,7 +11,7 @@ export async function POST(request) {
             return NextResponse.json(
                 { error: "Add some content" },
                 { status: 400 }
-            )
+            );
         }
 
         await connectToDatabase();
@@ -21,14 +21,14 @@ export async function POST(request) {
         return NextResponse.json(
             { message: "Content added successfully" },
             { status: 201 }
-        )
+        );
     } catch (error) {
         console.log("add content error", error);
 
         return NextResponse.json(
             { error: "Failed to add content" },
             { status: 500 }
-        )
+        );
     }
 }
 
@@ -90,7 +90,7 @@ export async function DELETE(request) {
             return NextResponse.json(
                 { message: "Invalid contentId" },
                 { status: 400 }
-            )
+            );
         }
 
 
@@ -100,13 +100,13 @@ export async function DELETE(request) {
             return NextResponse.json(
                 { message: "Content not found" },
                 { status: 404 }
-            )
+            );
         }
 
         return NextResponse.json(
             { message: "Content deleted successfully" },
             { status: 200 }
-        )
+        );
     } catch (error) {
         console.error("delete content error:", error);
 
@@ -126,7 +126,7 @@ export async function GET(request) {
         let menuItemId = searchParams.get("menuItemId");
 
 
-        const content = await Content.find({ menuItemId })
+        const content = await Content.find({ menuItemId }).populate("menuItemId");
 
         return NextResponse.json(
             {
@@ -134,13 +134,13 @@ export async function GET(request) {
                 content
             },
             { status: 200 }
-        )
+        );
     } catch (error) {
         console.log("get content error", error);
 
         return NextResponse.json(
             { error: "Failed to get content" },
             { status: 500 }
-        )
+        );
     }
 }

@@ -1,24 +1,28 @@
 "use client";
 
+import CustomSkeleton from "@/components/CustomSkeleton";
 import { useApiQuery } from "@/hooks/useApiQuery";
 import hljs from "highlight.js";
 import "highlight.js/styles/monokai-sublime.css";
 import parse from "html-react-parser";
+import { Check, Copy } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 
 const generateUniqueId = () => crypto.randomUUID();
 
 const Details = () => {
-    const menuItem = sessionStorage.getItem("menuItem");
-    const parsedMenuItem = menuItem ? JSON.parse(menuItem) : null;
+    const params = useParams();
 
     const { data, isLoading, error } = useApiQuery({
         url: "/user/content",
         queryKey: "content",
-        params: { menuItemId: parsedMenuItem?.id },
+        params: { menuItemId: params?.id },
     });
+
+    console.log("data", data);
+
 
     const contentRef = useRef(null);
     const [copiedCodeId, setCopiedCodeId] = useState(null);
@@ -44,9 +48,13 @@ const Details = () => {
 
     return (
         <div>
+            {!data &&
+                <CustomSkeleton />
+            }
+
             <div className="flex justify-between items-center gap-3">
                 <h1 className="text-[2rem] font-extrabold capitalize">
-                    {parsedMenuItem?.name}
+                    {data?.content?.[0]?.menuItemId?.title}
                 </h1>
             </div>
 

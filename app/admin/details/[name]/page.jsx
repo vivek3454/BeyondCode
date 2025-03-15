@@ -1,32 +1,30 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useApiQuery } from "@/hooks/useApiQuery";
-import { useRouter } from "next/navigation";
-import parse from 'html-react-parser';
-import { useEffect, useRef, useState } from "react";
-import { Trash2 } from "lucide-react";
 import DeleteAlertModal from "@/components/admin/DeleteAlertModal";
-import { useApiMutation } from "@/hooks/useApiMutation";
+import CustomSkeleton from "@/components/CustomSkeleton";
+import { Button } from "@/components/ui/button";
 import { DELETE } from "@/constants/apiMethods";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { useApiQuery } from "@/hooks/useApiQuery";
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai-sublime.css';
-import { Copy, Check } from "lucide-react";
+import parse from 'html-react-parser';
+import { Check, Copy, Trash2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const generateUniqueId = () => crypto.randomUUID();
 
 const Details = () => {
-    const menuItem = sessionStorage.getItem("menuItem")
-    const parsedMenuItem = menuItem ? JSON.parse(menuItem) : null;
-    const title = parsedMenuItem?.name?.toLowerCase();
+    const params = useParams();
     const router = useRouter();
     const [isDeleteContentModalOpen, setIsDeleteContentModalOpen] = useState(false);
 
     const { data, isLoading, error } = useApiQuery({
         url: "/content",
         queryKey: "content",
-        params: { menuItemId: parsedMenuItem?.id }
+        params: { menuItemId: params?.name }
     });
 
     const { mutate: deleteContent, isLoading: isDeleteContentLoading } = useApiMutation({
@@ -65,16 +63,19 @@ const Details = () => {
 
     return (
         <div>
+            {!data &&
+                <CustomSkeleton admin />
+            }
             <div className="flex justify-between items-center gap-3">
-                <h1 className='text-[2rem] font-extrabold capitalize'>{parsedMenuItem?.name}</h1>
-                {(data && data?.content?.length > 0) ?
+                <h1 className='text-[2rem] font-extrabold capitalize'>{data?.content?.[0]?.menuItemId?.title}</h1>
+                {data && ((data?.content?.length > 0) ?
                     <div className="flex items-center gap-2">
                         <Button onClick={() => router.push(`/admin/details/${title}/add-details`)}>Update Details</Button>
                         <Button className="bg-destructive hover:bg-destructive/90 dark:bg-red-500 dark:hover:bg-red-600 dark:text-white" onClick={() => setIsDeleteContentModalOpen(true)}>
                             <Trash2 />
                         </Button>
                     </div>
-                    : <Button onClick={() => router.push(`/admin/details/${title}/add-details`)}>Add Details</Button>}
+                    : <Button onClick={() => router.push(`/admin/details/${data?.content?.[0]?._id}/add-details`)}>Add Details</Button>)}
             </div>
 
             <div className="w-full mt-10 details" ref={contentRef}>

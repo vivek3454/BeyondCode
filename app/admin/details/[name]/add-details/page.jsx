@@ -4,13 +4,12 @@ import { Button } from '@/components/ui/button';
 import { PATCH, POST } from '@/constants/apiMethods';
 import { useApiMutation } from '@/hooks/useApiMutation';
 import { useApiQuery } from '@/hooks/useApiQuery';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 
 const AddDetails = () => {
-    const menuItem = sessionStorage?.getItem("menuItem");
     const router = useRouter();
-    const parsedMenuItem = menuItem ? JSON.parse(menuItem) : null;
+     const params = useParams();
 
     const editorRef = useRef(null);
     const { mutate: addContent, isLoading } = useApiMutation({
@@ -27,7 +26,7 @@ const AddDetails = () => {
     const { data, isLoading: isGetContentLoading, error } = useApiQuery({
         url: "/content",
         queryKey: "content",
-        params: { menuItemId: parsedMenuItem?.id }
+        params: { menuItemId: params?.name }
     });
 
     console.log("data content",data);
@@ -39,10 +38,10 @@ const AddDetails = () => {
 
             if (contentString) {
                 if (data?.content[0]?.contentString) {
-                    updateContent({ contentString, contentId: data?.content[0]?._id }, { onSuccess: () => router.push(`/admin/details/${parsedMenuItem?.name}`) });
+                    updateContent({ contentString, contentId: data?.content[0]?._id }, { onSuccess: () => router.push(`/admin/details/${params?.name}`) });
                 }
                 else {
-                    addContent({ contentString, menuItemId: parsedMenuItem?.id }, { onSuccess: () => router.push(`/admin/details/${parsedMenuItem?.name}`) });
+                    addContent({ contentString, menuItemId: params?.id }, { onSuccess: () => router.push(`/admin/details/${params?.name}`) });
                 }
             }
         }
